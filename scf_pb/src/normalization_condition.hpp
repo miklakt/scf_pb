@@ -11,7 +11,7 @@ using namespace general_identities;
 namespace planar
 {
 template <class T>
-auto open_planar(T const &chi, T const &theta, T const &kappa){
+auto open(T const &chi, T const &theta, T const &kappa){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -23,7 +23,7 @@ auto open_planar(T const &chi, T const &theta, T const &kappa){
 }
 
 template <class T>
-auto restricted_planar(T const &chi, T const &theta, T const &kappa, T const &R){
+auto restricted(T const &chi, T const &theta, T const &kappa, T const &R){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -37,7 +37,7 @@ auto restricted_planar(T const &chi, T const &theta, T const &kappa, T const &R)
 
 namespace pore{
 template <class T>
-auto open_pore(T const &chi, T const &theta, T const &kappa, T const &pore_R){
+auto open(T const &chi, T const &theta, T const &kappa, T const &pore_R){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -49,7 +49,7 @@ auto open_pore(T const &chi, T const &theta, T const &kappa, T const &pore_R){
 }
 
 template <class T>
-auto restricted_pore(T const &chi, T const &theta, T const &kappa, T const &R){
+auto restricted(T const &chi, T const &theta, T const &kappa, T const &R){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;

@@ -27,13 +27,13 @@ class BrushEdgePlanar : public BrushEdge<T>{
         solve();
     };
     void solve() const{
-        T D_free = planar::open_planar(m_chi, m_theta, m_kappa);
+        T D_free = planar::open(m_chi, m_theta, m_kappa);
         if (D_free<m_R){
             m_D = D_free;
             m_phi_D = phi_at_zero_Pi(m_chi);
         }
         else{
-            m_phi_D = solve_normalization(planar::restricted_planar(m_chi, m_theta, m_kappa, m_R));
+            m_phi_D = solve_normalization(planar::restricted(m_chi, m_theta, m_kappa, m_R));
             m_D = m_R;
         }
     };

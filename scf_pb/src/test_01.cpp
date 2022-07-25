@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
     double N=1000.0;
     double sigma = 0.02;
     //auto norm = open_planar(chi, N*sigma, kappa);
-    auto norm = pore::open(chi, N*sigma*2*M_PI*300, kappa, 300.0);
+    auto norm = pore::free::D(chi, N*sigma*2*M_PI*300, kappa, 300.0);
     double d = solve_normalization(norm, N*sigma, N);
     //double R = d-10.0;
     int zsize = 100;
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
         phi[i] = phi_z_func(z[i]);
         std::cout << phi[i] << std::endl;
     }
-    auto norm_r = pore::R_opening(N*sigma*2*M_PI*272, kappa, 0.0);
+    auto norm_r = pore::restricted::R_opening(N*sigma*2*M_PI*272, kappa, 0.0);
     double R_open = solve_normalization(norm_r, 50.0, 300.0);
     //std::cout << phi_D_r;
     //auto stop = std::chrono::high_resolution_clock::now();

@@ -10,8 +10,9 @@ using namespace general_identities;
 
 namespace planar
 {
+namespace free{
 template <class T>
-auto open(T const &chi, T const &theta, T const &kappa){
+auto D(T const &chi, T const &theta, T const &kappa){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -21,9 +22,11 @@ auto open(T const &chi, T const &theta, T const &kappa){
     auto integral = [integrand, theta](T d){return gauss_kronrod<double, 31>::integrate(integrand(d), T(0), d)- theta;};
     return integral;
 }
+} // namespace free
 
+namespace restricted{
 template <class T>
-auto restricted(T const &chi, T const &theta, T const &kappa, T const &R){
+auto phi_D(T const &chi, T const &theta, T const &kappa, T const &R){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -32,12 +35,13 @@ auto restricted(T const &chi, T const &theta, T const &kappa, T const &R){
     auto integral = [integrand, theta, R](T phi_D){return gauss_kronrod<double, 31>::integrate(integrand(phi_D), T(0), R)- theta;};
     return integral;
 }
-
+} // namespace restricted
 } // namespace planar
 
 namespace pore{
+namespace free{
 template <class T>
-auto open(T const &chi, T const &theta, T const &kappa, T const &pore_R){
+auto D(T const &chi, T const &theta, T const &kappa, T const &pore_R){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -47,9 +51,11 @@ auto open(T const &chi, T const &theta, T const &kappa, T const &pore_R){
     auto integral = [integrand, theta](T d){return gauss_kronrod<double, 31>::integrate(integrand(d), T(0), d)- theta;};
     return integral;
 }
+} // namespace free
 
+namespace restricted{
 template <class T>
-auto restricted(T const &chi, T const &theta, T const &kappa, T const &R){
+auto phi_D(T const &chi, T const &theta, T const &kappa, T const &R){
     using namespace std;
     using namespace boost::math::tools;
     using namespace boost::math::quadrature;
@@ -96,6 +102,7 @@ auto R_opening(T const &theta, T const &kappa, T const &chi){
         };
     return integral;
 }
+} // namespace restricted
 } // namespace pore
 
 template <class F, class T>

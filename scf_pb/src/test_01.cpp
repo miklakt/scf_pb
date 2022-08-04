@@ -4,7 +4,7 @@
 #include <chrono>
 #include "ss_scf_common.hpp"
 #include "normalization_condition.hpp"
-#include "phi.hpp"
+#include "profiles.hpp"
 
 int main(int argc, char* argv[]){
     double chi = 0.0;
@@ -12,9 +12,11 @@ int main(int argc, char* argv[]){
     double N=1000.0;
     double sigma = 0.02;
     //auto norm = open_planar(chi, N*sigma, kappa);
-    auto norm = pore::free::D(chi, N*sigma*2*M_PI*300, kappa, 300.0);
-    double d = solve_normalization(norm, N*sigma, N);
+    //auto norm = pore::free::D(chi, N*sigma*2*M_PI*300, kappa, 300.0);
+    //double d = solve_normalization(norm, N*sigma, N);
     //double R = d-10.0;
+    BrushPhiProfilePlanar brush(chi, N, sigma, kappa);
+    double d = brush.D();
     int zsize = 100;
     std::vector<double> z(zsize);
     std::iota(z.begin(), z.end(), 0);
@@ -28,9 +30,10 @@ int main(int argc, char* argv[]){
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    auto phi_z_func = [=](double z){return phi_z(chi, phi_D, d, z, kappa);};
+    //auto phi_z_func = [=](double z){return phi_z(chi, phi_D, d, z, kappa);};
     for (unsigned i =0; i<zsize; i++){
-        phi[i] = phi_z_func(z[i]);
+        //phi[i] = phi_z_func(z[i]);
+        phi[i] = brush.phi_z(i);
         std::cout << phi[i] << std::endl;
     }
     auto norm_r = pore::restricted::R_opening(N*sigma*2*M_PI*272, kappa, 0.0);

@@ -9,7 +9,7 @@
 #define USE_PREVIOUS_GUESS true
 #define DEFAULT_MU_MAX(CHI) -std::log(1-DEFAULT_PHI_MAX) - 2*CHI*DEFAULT_PHI_MAX
 
-namespace general_identities{
+namespace ss_scf_common{
 
 //Osmotic pressure
 template <class T>

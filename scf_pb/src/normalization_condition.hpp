@@ -6,7 +6,7 @@
 
 #define ALMOST_ONE 0.99999f
 
-using namespace general_identities;
+using namespace ss_scf_common;
 
 namespace planar
 {

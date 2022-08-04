@@ -15,7 +15,7 @@ int main(int argc, char* argv[]){
     //auto norm = pore::free::D(chi, N*sigma*2*M_PI*300, kappa, 300.0);
     //double d = solve_normalization(norm, N*sigma, N);
     //double R = d-10.0;
-    BrushPhiProfilePlanar brush(chi, N, sigma, kappa);
+    BrushPhiProfilePore brush(chi, N, sigma, kappa, 300);
     double d = brush.D();
     int zsize = 100;
     std::vector<double> z(zsize);

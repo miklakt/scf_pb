@@ -13,6 +13,8 @@ int main(int argc, char* argv[]){
 
     BrushPhiProfilePore brush(chi, N, sigma, kappa, R);
 
+    BrushPhiProfileBase *b = &brush;
+
     std::cout << "Program tests brush density profile calculation in a pore " << std::endl;
 
     std::cout << "------------------------------------------" << std::endl;
@@ -25,8 +27,8 @@ int main(int argc, char* argv[]){
 
     std::cout << "------------------------------------------" << std::endl;
 
-    std::cout << "H: " << brush.D() << std::endl;
-    std::cout << "phi_D: " << brush.phi_D() << std::endl;
+    std::cout << "H: " << b->D() << std::endl;
+    std::cout << "phi_D: " << b->phi_D() << std::endl;
 
     std::cout << "------------------------------------------" << std::endl;
     

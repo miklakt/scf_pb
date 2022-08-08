@@ -1,14 +1,9 @@
-//$ c++ -O3 -Wall -shared -std=c++14 -fPIC $(python3 -m pybind11 --includes) py.cpp -o py$(python3-config --extension-suffix)
-//#pragma once
-#include <pybind11/pybind11.h>
 #include "ss_scf_common.hpp"
 #include "normalization_condition.hpp"
 #include "profiles.hpp"
 #include "topology.hpp"
 #include "particles.hpp"
 #include "energy.hpp"
-
-namespace py = pybind11;
 
 double D_eff(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
     double kappa = topology::kappa(N);
@@ -19,8 +14,17 @@ double D_eff(const double N, const double sigma, const double chi, const double 
     return d_eff;
 }
 
-PYBIND11_MODULE(scf_pb, m){
-    m.doc() = "Analytical self-consistent filed for polymer brushes";
+int main(int argc, char* argv[]){
+    double N = 1000;
+    double chi = 0.0;
+    double sigma = 0.02;
+    double chi_PC = -2.5;
+    double a0 = 0.18;
+    double a1 = -0.09;
+    double width = 4;
+    double height = 4;
 
-    m.def("D_eff", &D_eff, "Effective diffusion coefficient");
+    double d_eff = D_eff(N, sigma, chi, chi_PC, a0, a1, width, height);
+    std::cout << "Effective diffusion coefficient: " << d_eff << std::endl; 
 }
+

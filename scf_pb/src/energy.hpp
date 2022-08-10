@@ -16,6 +16,7 @@ double gamma_2poly_model(const double a1, const double a2, const double chi, con
     return gamma;
 }
 
+
 namespace make_function{
 auto gamma_phi = [](const double a1, const double a2, const double chi, const double chi_PC){return [=](const double phi){return gamma_2poly_model(a1, a2, chi, chi_PC, phi);};};
 

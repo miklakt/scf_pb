@@ -31,6 +31,7 @@ namespace make_function{
 auto gamma_phi = [](const double a1, const double a2, const double chi, const double chi_PC){return [=](const double phi){return gamma_2poly_model(a1, a2, chi, chi_PC, phi);};};
 auto mobility_phi = []( const double d, const double k=2){return [=](const double phi){return mobility_factor(phi, d, k);};};
 
+/*
 template<typename BrushType, typename ParticleType>
 auto osmotic_free_energy_func(const BrushType* brush, const ParticleType* particle){
 
@@ -45,9 +46,23 @@ auto osmotic_free_energy_func(const BrushType* brush, const ParticleType* partic
 
     return integral;
 }
+*/
+auto osmotic_free_energy_func(const BrushProfile* brush, const Particle* particle){
 
-template<typename BrushType, typename ParticleType, typename SurfaceCoefficient>
-auto surface_free_energy_func(const BrushType* brush, const ParticleType* particle, SurfaceCoefficient gamma)
+    auto integrand = [brush, particle](const double particle_center){
+        return [brush, particle, particle_center](const double z){
+            return brush->Pi_z(particle_center - particle->height/2+z)*particle->volume_integrand(z);
+            };
+        };
+    auto integral = [particle, integrand](const double particle_center){
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand(particle_center), 0.0, particle->height);
+        };
+
+    return integral;
+}
+
+template<typename SurfaceCoefficient>
+auto surface_free_energy_func(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma)
 {
     const double A0 = particle->surface_edges()[0];
     const double A1 = particle->surface_edges()[1];
@@ -68,22 +83,22 @@ auto surface_free_energy_func(const BrushType* brush, const ParticleType* partic
     return free_energy;
 }
 
-template<typename BrushType, typename ParticleType, typename SurfaceCoefficient>
-auto total_free_energy_func(const BrushType* brush, const ParticleType* particle, SurfaceCoefficient gamma){
+template<typename SurfaceCoefficient>
+auto total_free_energy_func(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma){
     auto free_energy = [=](const double  particle_position){return osmotic_free_energy_func(brush, particle)(particle_position)+surface_free_energy_func(brush, particle, gamma)(particle_position);};
     return free_energy;
 }
 
-template<typename BrushType, typename ParticleType, typename SurfaceCoefficient>
-auto effective_diffusion_coefficient_ab(const BrushType* brush, const ParticleType* particle, SurfaceCoefficient gamma){
+template<typename SurfaceCoefficient>
+auto effective_diffusion_coefficient_ab(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma){
     auto free_energy_z = make_function::total_free_energy_func(brush, particle, gamma);
     auto integrand = [free_energy_z](const double z){return std::exp(free_energy_z(z));};
     auto d_eff = [=](const double a, const double b){return (b-a)/boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b);};
     return d_eff;
 }
 
-template<typename BrushType, typename ParticleType, typename SurfaceCoefficient, typename MobilityCoefficient>
-auto effective_diffusion_coefficient_ab(const BrushType* brush, const ParticleType* particle, SurfaceCoefficient gamma, MobilityCoefficient mobility){
+template<typename SurfaceCoefficient, typename MobilityCoefficient>
+auto effective_diffusion_coefficient_ab(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma, MobilityCoefficient mobility){
     auto free_energy_z = make_function::total_free_energy_func(brush, particle, gamma);
     auto mobility_z = [mobility, brush, particle](const double z){return mobility_phi(particle->width)(brush->phi_z(z));};
     auto integrand = [free_energy_z, mobility_z](const double z){return std::exp(free_energy_z(z))/mobility_z(z);};
@@ -93,13 +108,13 @@ auto effective_diffusion_coefficient_ab(const BrushType* brush, const ParticleTy
 }
 
 
-template<typename BrushType, typename ParticleType, typename SurfaceCoefficient>
-auto effective_diffusion_coefficient(const BrushType* brush, const ParticleType* particle, SurfaceCoefficient gamma){
+template<typename SurfaceCoefficient>
+auto effective_diffusion_coefficient(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma){
     return make_function::effective_diffusion_coefficient_ab(brush, particle, gamma)(particle->height/2, brush->D());
 }
 
 
-template<typename BrushType, typename ParticleType, typename SurfaceCoefficient, typename MobilityCoefficient>
-auto effective_diffusion_coefficient(const BrushType* brush, const ParticleType* particle, SurfaceCoefficient gamma, MobilityCoefficient mobility){
+template<typename SurfaceCoefficient, typename MobilityCoefficient>
+auto effective_diffusion_coefficient(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma, MobilityCoefficient mobility){
     return make_function::effective_diffusion_coefficient_ab(brush, particle, gamma, mobility)(particle->height/2, brush->D());
 }

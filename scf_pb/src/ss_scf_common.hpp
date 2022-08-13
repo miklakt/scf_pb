@@ -89,7 +89,9 @@ T mu_inv(T const &mu, T const &chi){
     if (chi==0){
         return 1-std::exp(-mu);
     }
-    return 1+lambert_w0(-2*chi*std::exp(-2*chi-mu))/(2*chi);
+    double lambert_arg = -2*chi*std::exp(-2*chi-mu);
+    if (lambert_arg <= -0.367879){return 0.0;} //near singularity point
+    return 1+lambert_w0(lambert_arg)/(2*chi);
 }
 
 //Polymer density at given z

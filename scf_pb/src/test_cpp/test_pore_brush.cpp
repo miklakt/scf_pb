@@ -2,17 +2,17 @@
 #include <chrono>
 #include <memory>
 #include <cmath>
-#include "ss_scf_common.hpp"
-#include "normalization_condition.hpp"
-#include "profiles.hpp"
-#include "topology.hpp"
-#include "particles.hpp"
-#include "energy.hpp"
+#include "../ss_scf_common.hpp"
+#include "../normalization_condition.hpp"
+#include "../profiles.hpp"
+#include "../topology.hpp"
+#include "../particles.hpp"
+#include "../energy.hpp"
 
 
 
 int main(int argc, char* argv[]){
-    
+
     double chi = 0.0;
     double N=1000.0;
     double sigma = 0.02;
@@ -66,9 +66,9 @@ int main(int argc, char* argv[]){
 
     std::cout << "------------------------------------------" << std::endl;
 
-    
+
     //double phi_integral = integrator([b](double z){return b->phi_z(z);}, 0.0, b->D());
-    
+
     std::cout << "theta: " << b->phi_z_cumulative(b->D()) << std::endl;
 
     std::cout << "------------------------------------------" << std::endl;
@@ -90,14 +90,14 @@ int main(int argc, char* argv[]){
     double chi_PC = -1.5;
     auto gamma_phi = make_function::gamma_phi(a0, a1, chi, chi_PC);
     auto surface_free_energy = make_function::surface_free_energy_func(b, particle, gamma_phi);
-    auto total_free_energy = make_function::total_free_energy_func(b, particle, gamma_phi); 
-    
+    auto total_free_energy = make_function::total_free_energy_func(b, particle, gamma_phi);
+
     std::cout << "osmotic energy(z=10): " << osmotic_free_energy << std::endl;
     std::cout << "surface energy(z=10): " << surface_free_energy(position) << std::endl;
     std::cout << "total energy(z=10): " << total_free_energy(position) << std::endl;
 
     std::cout << "------------------------------------------" << std::endl;
-    
+
     //double d_eff = make_function::effective_diffusion_coefficient_ab(b, particle, gamma_phi)(particle->height/2, b->D());
     double d_eff = effective_diffusion_coefficient(b, particle, gamma_phi);
 

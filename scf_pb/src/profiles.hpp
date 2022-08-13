@@ -10,7 +10,7 @@
 
 #define UNBOUND_MEMBER_FUNCTION(x) [this](double arg){return this->x(arg);}
 #define INTEGRATE_PROFILE(F, a, b) boost::math::quadrature::gauss_kronrod<double, 31>::integrate(F, a, b);
-#define MAKE_DEFAULT_CUMULATIVE_MEMBER_FUNCTION(F) double F##_cumulative(const double z) const {INTEGRATE_PROFILE(UNBOUND_MEMBER_FUNCTION(F), 0.0, z);}
+#define MAKE_DEFAULT_CUMULATIVE_MEMBER_FUNCTION(F) double F##_cumulative(const double z) const {return INTEGRATE_PROFILE(UNBOUND_MEMBER_FUNCTION(F), 0.0, z);}
 
 class BrushProfile
 {
@@ -33,7 +33,7 @@ class BrushProfilePlanar : public BrushProfile
     mutable double m_D, m_phi_D;
 
     public:
-    BrushProfilePlanar(double const &chi, double const &N, double const &sigma, double const &kappa, double const &R) 
+    BrushProfilePlanar(double const &chi, double const &N, double const &sigma, double const &kappa, double const &R)
     : m_chi(chi), m_N(N), m_sigma(sigma), m_kappa(kappa), m_R(R), m_theta(N*sigma)
     {
         double D_free = solve_normalization(planar::free::D(m_chi, m_theta, m_kappa), m_theta, m_N);
@@ -48,7 +48,7 @@ class BrushProfilePlanar : public BrushProfile
         }
     }
     BrushProfilePlanar(double const &chi, double const &N, double const &sigma, double const &kappa) : BrushProfilePlanar(chi, N, sigma, kappa, std::numeric_limits<double>::max()) {};
-    
+
     double D() const override{
         return m_D;
     }
@@ -73,7 +73,7 @@ class BrushProfilePore : public BrushProfile
     mutable double m_D, m_phi_D;
 
     public:
-    BrushProfilePore(double const &chi, double const &N, double const &sigma, double const &kappa, double const &R) 
+    BrushProfilePore(double const &chi, double const &N, double const &sigma, double const &kappa, double const &R)
     : m_chi(chi), m_N(N), m_sigma(sigma), m_kappa(kappa), m_R(R), m_theta(2*M_PI*R*N*sigma)
     {
         double D_free = solve_normalization(pore::free::D(m_chi, m_theta, m_kappa, m_R), m_N*m_sigma, m_N);
@@ -87,7 +87,7 @@ class BrushProfilePore : public BrushProfile
             m_D = m_R;
         }
     }
-    
+
     double D() const override{
         return m_D;
     }
@@ -115,7 +115,7 @@ class BrushProfileExternal : public BrushProfile{
         const boost::math::cubic_b_spline<double> m_phi_spline;
 
     public:
-    BrushProfileExternal(const std::vector<double> &phi, const double chi, const double dz=1, const double phi_cut = 1e-4) 
+    BrushProfileExternal(const std::vector<double> &phi, const double chi, const double dz=1, const double phi_cut = 1e-4)
     : m_phi_profile(phi), m_dz(dz), m_phi_cut(phi_cut), m_chi(chi), m_phi_spline(phi.begin(), phi.end(), 0, dz)
     {
         auto first_smaller_it = std::lower_bound(m_phi_profile.rbegin(), m_phi_profile.rend(), m_phi_cut);
@@ -124,7 +124,7 @@ class BrushProfileExternal : public BrushProfile{
         m_phi_D = m_phi_profile[idx];
         //m_D = boost::math::tools::bisect(m_phi_spline, 0, m_phi_profile.size()*dx, phi_cut);
     }
-        
+
     double phi_z(const double z) const override{
         if (z>m_D)
             return 0.0;
@@ -132,7 +132,7 @@ class BrushProfileExternal : public BrushProfile{
             return phi_z(0);
         return m_phi_spline(z);
     }
-    
+
     double Pi_z(const double z) const override{
         return ss_scf_common::Pi(phi_z(z), m_chi);
     }

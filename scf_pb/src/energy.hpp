@@ -7,6 +7,20 @@
 #include "particles.hpp"
 
 
+/*
+class GammaCoefficient{
+    public:
+    static const double chi_crit = 6.0*std::log(5.0/6.0);
+    static const polynomial2_model(const double a1, const double a2, const double chi, const double chi_PC, const double phi){
+        double chi_ads = chi_PC - chi*(1-phi);
+        double psi = a1*phi + a2*phi*phi;
+        double gamma = (chi_ads-chi_crit)*psi;
+        return gamma;
+    }
+    GammaCoefficient(const double a1, const double a2, const double chi, const double chi_PC, const double phi)
+
+};
+*/
 
 const double chi_crit = 6.0*std::log(5.0/6.0);
 double gamma_2poly_model(const double a1, const double a2, const double chi, const double chi_PC, const double phi){
@@ -31,22 +45,6 @@ namespace make_function{
 auto gamma_phi = [](const double a1, const double a2, const double chi, const double chi_PC){return [=](const double phi){return gamma_2poly_model(a1, a2, chi, chi_PC, phi);};};
 auto mobility_phi = []( const double d, const double k=2){return [=](const double phi){return mobility_factor(phi, d, k);};};
 
-/*
-template<typename BrushType, typename ParticleType>
-auto osmotic_free_energy_func(const BrushType* brush, const ParticleType* particle){
-
-    auto integrand = [brush, particle](const double particle_center){
-        return [brush, particle, particle_center](const double z){
-            return brush->Pi_z(particle_center - particle->height/2+z)*particle->volume_integrand(z);
-            };
-        };
-    auto integral = [particle, integrand](const double particle_center){
-        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand(particle_center), 0.0, particle->height);
-        };
-
-    return integral;
-}
-*/
 auto osmotic_free_energy_func(const BrushProfile* brush, const Particle* particle){
 
     auto integrand = [brush, particle](const double particle_center){

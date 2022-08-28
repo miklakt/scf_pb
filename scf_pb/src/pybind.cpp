@@ -52,14 +52,14 @@ auto D_eff_mobility_v(const vdouble N, const vdouble sigma, const vdouble chi, c
 }
 */
 
-/*
+
 auto D_eff_mobility_v(const vdouble N, const vdouble sigma, const vdouble chi, const vdouble chi_PC, const vdouble a0, const vdouble a1, const vdouble particle_width, const vdouble particle_height){
     auto res = cartesian_product::vectorize_function(D_eff_mobility)(N, sigma, chi, chi_PC, a0, a1, particle_width, particle_height);
     return res;
 }
-*/
 
-auto D_eff_mobility_v = cartesian_product::vectorize_function(D_eff_mobility);
+
+//auto D_eff_mobility_v = cartesian_product::vectorize_function(D_eff_mobility);
 
 double phi(const double N, const double sigma, const double chi, const double z){
     double kappa = topology::kappa(N);

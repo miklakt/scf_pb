@@ -73,7 +73,9 @@ double D(const double N, const double sigma, const double chi){
     return brush.D();
 }
 
-PYBIND11_MODULE(scf_pb, m){
+PYBIND11_MODULE(_scf_pb, m){
+    //m.attr("__name__") = "scf_pb._scf_pb";
+    //py::module m("_scf_pb", "Analytical self-consistent filed for polymer brushes");
     m.doc() = "Analytical self-consistent filed for polymer brushes, calculate polymer density profile, insertion free energy penalty and diffusion coefficient";
 
     m.def("D_eff", &D_eff, "Effective diffusion coefficient");
@@ -83,4 +85,6 @@ PYBIND11_MODULE(scf_pb, m){
     m.def("D_eff_corrected_v", D_eff_mobility_v, "Corrected effective diffusion coefficient");
     m.def("phi", &phi, "Polymer density profile");
     m.def("D", &D, "Brush thickness");
+
+    //return m.ptr()
 }

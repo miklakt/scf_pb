@@ -30,7 +30,7 @@ double gamma_2poly_model(const double a1, const double a2, const double chi, con
     return gamma;
 }
 
-const double mobility_factor(const double phi, const double d, const double k=2){
+const double mobility_factor(const double phi, const double d, const double k=4){
     if (phi == 0){
         return 1;
     }

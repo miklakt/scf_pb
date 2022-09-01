@@ -6,14 +6,9 @@ try:
 except:
     pass
 
-def vectorize(product = True, signature = None) -> Callable:
+def vectorize(product = True) -> Callable:
     def decorator(func : Callable) -> Callable:
-        nonlocal signature
-        if signature is None:
-            try:
-                signature = inspect.signature(func)
-            except:
-                raise TypeError("Can not find signature for the callable, please provide one")
+        signature = inspect.signature(func)
         def wrapped(*args, **kwargs):
             args_to_kwargs = {param : arg for param, arg in zip(signature.parameters, args)}
             all_args = dict(**args_to_kwargs, **kwargs)

@@ -124,7 +124,7 @@ setup(
     version="0.0.1",
     author="Mikhail Laktionov",
     author_email="miklakt@gmail.com",
-    #url="https://github.com/pybind/python_example",
+    url="https://github.com/pybind/python_example",
     description="A test project using pybind11",
     long_description="",
     ext_modules=[CMakeExtension('scf_pb._scf_pb')],

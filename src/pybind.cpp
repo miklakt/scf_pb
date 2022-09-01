@@ -8,18 +8,11 @@
 #include "topology.hpp"
 #include "particles.hpp"
 #include "energy.hpp"
-#include "vectorization.hpp"
 #include "vector"
 
 namespace py = pybind11;
 
-typedef std::vector<double> vdouble;
-
-vdouble v_test(vdouble arr){
-    return arr;
-}
-
-double D_eff(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
+double D_eff_old(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
     particle::Cylinder particle(particle_height, particle_width);
@@ -28,38 +21,15 @@ double D_eff(const double N, const double sigma, const double chi, const double 
     return d_eff;
 }
 
-
-auto D_eff_v(const vdouble N, const vdouble sigma, const vdouble chi, const vdouble chi_PC, const vdouble a0, const vdouble a1, const vdouble particle_width, const vdouble particle_height){
-    auto res = cartesian_product::cross_apply(D_eff, N, sigma, chi, chi_PC, a0, a1, particle_width, particle_height);
-    return res;
-}
-
-
-double D_eff_mobility(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
+double D_eff(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
     particle::Cylinder particle(particle_height, particle_width);
     auto gamma_phi = make_function::gamma_phi(a0, a1, chi, chi_PC);
-    auto mobility = make_function::mobility_phi(particle_width);
+    auto mobility = make_function::mobility_phi(particle_width, k_smooth);
     double d_eff = effective_diffusion_coefficient(&brush, &particle, gamma_phi, mobility);
     return d_eff;
 }
-
-/*
-auto D_eff_mobility_v(const vdouble N, const vdouble sigma, const vdouble chi, const vdouble chi_PC, const vdouble a0, const vdouble a1, const vdouble particle_width, const vdouble particle_height){
-    auto res = cartesian_product::cross_apply(D_eff_mobility, N, sigma, chi, chi_PC, a0, a1, particle_width, particle_height);
-    return res;
-}
-*/
-
-
-auto D_eff_mobility_v(const vdouble N, const vdouble sigma, const vdouble chi, const vdouble chi_PC, const vdouble a0, const vdouble a1, const vdouble particle_width, const vdouble particle_height){
-    auto res = cartesian_product::vectorize_function(D_eff_mobility)(N, sigma, chi, chi_PC, a0, a1, particle_width, particle_height);
-    return res;
-}
-
-
-//auto D_eff_mobility_v = cartesian_product::vectorize_function(D_eff_mobility);
 
 double phi(const double N, const double sigma, const double chi, const double z){
     double kappa = topology::kappa(N);
@@ -73,18 +43,14 @@ double D(const double N, const double sigma, const double chi){
     return brush.D();
 }
 
+using namespace pybind11::literals;
 PYBIND11_MODULE(_scf_pb, m){
-    //m.attr("__name__") = "scf_pb._scf_pb";
-    //py::module m("_scf_pb", "Analytical self-consistent filed for polymer brushes");
+    
     m.doc() = "Analytical self-consistent filed for polymer brushes, calculate polymer density profile, insertion free energy penalty and diffusion coefficient";
 
-    m.def("D_eff", &D_eff, "Effective diffusion coefficient");
-    m.def("D_eff_v", &D_eff_v, "Effective diffusion coefficient (vectorized)");
-    m.def("v_test", &v_test, "test vectorized input");
-    m.def("D_eff_corrected", &D_eff_mobility, "Corrected effective diffusion coefficient");
-    m.def("D_eff_corrected_v", D_eff_mobility_v, "Corrected effective diffusion coefficient");
-    m.def("phi", &phi, "Polymer density profile");
-    m.def("D", &D, "Brush thickness");
+    m.def("D_eff", &D_eff, "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
+    m.def("D_eff_old", &D_eff_old, "Corrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
+    m.def("phi", &phi, "Polymer density profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
+    m.def("D", &D, "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
 
-    //return m.ptr()
 }

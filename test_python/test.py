@@ -6,7 +6,7 @@ scf_pb.D_eff_v(N=1000, sigma = 0.02, chi = np.linspace(0, 1,100), chi_PC = np.li
 # %%
 import inspect
 # %%
-scf_pb.D_eff
+scf_pb.D_v(N=1000, sigma = 0.02, chi = np.linspace(0, 1,100))
 # %%
 scf_pb.D_eff_v
 # %%

@@ -31,6 +31,15 @@ double D_eff(const double N, const double sigma, const double chi, const double 
     return d_eff;
 }
 
+double free_energy(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double z){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = make_function::gamma_phi(a0, a1, chi, chi_PC);
+    fe = make_function::total_free_energy_func(brush, particle, gamma_phi)(z)
+    return fe
+}
+
 double phi(const double N, const double sigma, const double chi, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);

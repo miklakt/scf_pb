@@ -36,8 +36,8 @@ double free_energy(const double N, const double sigma, const double chi, const d
     BrushProfilePlanar brush(chi, N, sigma, kappa);
     particle::Cylinder particle(particle_height, particle_width);
     auto gamma_phi = make_function::gamma_phi(a0, a1, chi, chi_PC);
-    fe = make_function::total_free_energy_func(brush, particle, gamma_phi)(z)
-    return fe
+    double fe = make_function::total_free_energy_func(&brush, &particle, gamma_phi)(z);
+    return fe;
 }
 
 double phi(const double N, const double sigma, const double chi, const double z){
@@ -61,5 +61,5 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("D_eff_old", &D_eff_old, py::call_guard<py::gil_scoped_release>(), "Corrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
     m.def("phi", &phi, py::call_guard<py::gil_scoped_release>(), "Polymer density profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
     m.def("D", &D, py::call_guard<py::gil_scoped_release>(), "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
-
+    m.def("free_energy", &free_energy, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
 }

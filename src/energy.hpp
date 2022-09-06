@@ -30,7 +30,7 @@ double gamma_2poly_model(const double a1, const double a2, const double chi, con
     return gamma;
 }
 
-const double mobility_factor(const double phi, const double d, const double k=4){
+const double mobility_factor(const double phi, const double d, const double k){
     if (phi == 0){
         return 1;
     }
@@ -43,7 +43,7 @@ const double mobility_factor(const double phi, const double d, const double k=4)
 
 namespace make_function{
 auto gamma_phi = [](const double a1, const double a2, const double chi, const double chi_PC){return [=](const double phi){return gamma_2poly_model(a1, a2, chi, chi_PC, phi);};};
-auto mobility_phi = []( const double d, const double k=2){return [=](const double phi){return mobility_factor(phi, d, k);};};
+auto mobility_phi = []( const double d, const double k){return [=](const double phi){return mobility_factor(phi, d, k);};};
 
 auto osmotic_free_energy_func(const BrushProfile* brush, const Particle* particle){
 
@@ -95,10 +95,10 @@ auto effective_diffusion_coefficient_ab(const BrushProfile* brush, const Particl
     return d_eff;
 }
 
-template<typename SurfaceCoefficient, typename MobilityCoefficient>
-auto effective_diffusion_coefficient_ab(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma, MobilityCoefficient mobility){
+template<typename SurfaceCoefficient>
+auto effective_diffusion_coefficient_ab(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma, double k_smooth){
     auto free_energy_z = make_function::total_free_energy_func(brush, particle, gamma);
-    auto mobility_z = [mobility, brush, particle](const double z){return mobility_phi(particle->width)(brush->phi_z(z));};
+    auto mobility_z = [brush, particle, k_smooth](const double z){return mobility_phi(particle->width, k_smooth)(brush->phi_z(z));};
     auto integrand = [free_energy_z, mobility_z](const double z){return std::exp(free_energy_z(z))/mobility_z(z);};
     auto d_eff = [=](const double a, const double b){return (b-a)/boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b);};
     return d_eff;
@@ -112,7 +112,7 @@ auto effective_diffusion_coefficient(const BrushProfile* brush, const Particle* 
 }
 
 
-template<typename SurfaceCoefficient, typename MobilityCoefficient>
-auto effective_diffusion_coefficient(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma, MobilityCoefficient mobility){
-    return make_function::effective_diffusion_coefficient_ab(brush, particle, gamma, mobility)(particle->height/2, brush->D());
+template<typename SurfaceCoefficient>
+auto effective_diffusion_coefficient(const BrushProfile* brush, const Particle* particle, SurfaceCoefficient gamma, double k_smooth){
+    return make_function::effective_diffusion_coefficient_ab(brush, particle, gamma, k_smooth)(particle->height/2, brush->D());
 }

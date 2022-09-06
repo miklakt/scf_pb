@@ -26,8 +26,7 @@ double D_eff(const double N, const double sigma, const double chi, const double 
     BrushProfilePlanar brush(chi, N, sigma, kappa);
     particle::Cylinder particle(particle_height, particle_width);
     auto gamma_phi = make_function::gamma_phi(a0, a1, chi, chi_PC);
-    auto mobility = make_function::mobility_phi(particle_width, k_smooth);
-    double d_eff = effective_diffusion_coefficient(&brush, &particle, gamma_phi, mobility);
+    double d_eff = effective_diffusion_coefficient(&brush, &particle, gamma_phi, k_smooth);
     return d_eff;
 }
 

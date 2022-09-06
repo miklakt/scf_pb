@@ -12,7 +12,8 @@
 
 namespace py = pybind11;
 
-double D_eff_old(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
+
+double D_eff_uncorrected(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
     particle::Cylinder particle(particle_height, particle_width);
@@ -57,8 +58,9 @@ PYBIND11_MODULE(_scf_pb, m){
     m.doc() = "Analytical self-consistent filed for polymer brushes, calculate polymer density profile, insertion free energy penalty and diffusion coefficient";
 
     m.def("D_eff", &D_eff, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
-    m.def("D_eff_old", &D_eff_old, py::call_guard<py::gil_scoped_release>(), "Corrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
+    m.def("D_eff_uncorrected", &D_eff_uncorrected, py::call_guard<py::gil_scoped_release>(), "Uncorrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
     m.def("phi", &phi, py::call_guard<py::gil_scoped_release>(), "Polymer density profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
     m.def("D", &D, py::call_guard<py::gil_scoped_release>(), "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
     m.def("free_energy", &free_energy, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+    m.def("mobility", &mobility_factor, py::call_guard<py::gil_scoped_release>(), "Mobility factor", py::kw_only{}, "phi"_a, "d"_a, "k_smooth"_a);
 }

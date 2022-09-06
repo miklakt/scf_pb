@@ -40,6 +40,25 @@ double free_energy(const double N, const double sigma, const double chi, const d
     return fe;
 }
 
+double free_energy_osm(const double N, const double sigma, const double chi, const double particle_width, const double particle_height, const double z){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Cylinder particle(particle_height, particle_width);
+    double fe = make_function::osmotic_free_energy_func(&brush, &particle)(z);
+    return fe;
+}
+
+double free_energy_surf(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double z){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = make_function::gamma_phi(a0, a1, chi, chi_PC);
+    double fe = make_function::surface_free_energy_func(&brush, &particle, gamma_phi)(z);
+    return fe;
+}
+
+
+
 double phi(const double N, const double sigma, const double chi, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
@@ -62,5 +81,7 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("phi", &phi, py::call_guard<py::gil_scoped_release>(), "Polymer density profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
     m.def("D", &D, py::call_guard<py::gil_scoped_release>(), "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
     m.def("free_energy", &free_energy, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+    m.def("free_energy_surf", &free_energy_surf, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+    m.def("free_energy_osm", &free_energy_osm, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "particle_width"_a, "particle_height"_a, "z"_a);
     m.def("mobility", &mobility_factor, py::call_guard<py::gil_scoped_release>(), "Mobility factor", py::kw_only{}, "phi"_a, "d"_a, "k_smooth"_a);
 }

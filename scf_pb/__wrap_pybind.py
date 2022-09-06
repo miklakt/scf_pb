@@ -54,7 +54,7 @@ def wrap_pybind_func(pybind_func):
     return wrapper
 
 #pybind functions to wrap
-__pybind_functions = ["D_eff", "phi", "D", "free_energy"]
+__pybind_functions = ["D_eff", "D_eff_uncorrected", "phi", "D", "mobility", "free_energy", "free_energy_surf", "free_energy_osm"]
 __pybind_functions_vectorized = [func_name+"_v" for func_name in __pybind_functions]
 __all__ = __pybind_functions + __pybind_functions_vectorized
 

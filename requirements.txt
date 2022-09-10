@@ -1,6 +1,2 @@
 numpy
-scipy
-matplotlib
-jupyter
-ipympl
-pybind11
+wheel

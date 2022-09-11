@@ -7,21 +7,6 @@
 #include "particles.hpp"
 
 
-/*
-class GammaCoefficient{
-    public:
-    static const double chi_crit = 6.0*std::log(5.0/6.0);
-    static const polynomial2_model(const double a1, const double a2, const double chi, const double chi_PC, const double phi){
-        double chi_ads = chi_PC - chi*(1-phi);
-        double psi = a1*phi + a2*phi*phi;
-        double gamma = (chi_ads-chi_crit)*psi;
-        return gamma;
-    }
-    GammaCoefficient(const double a1, const double a2, const double chi, const double chi_PC, const double phi)
-
-};
-*/
-
 const double chi_crit = 6.0*std::log(5.0/6.0);
 double gamma_2poly_model(const double a1, const double a2, const double chi, const double chi_PC, const double phi){
     double chi_ads = chi_PC - chi*(1-phi);

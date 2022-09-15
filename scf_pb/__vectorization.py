@@ -1,10 +1,7 @@
 from typing import Callable
 import inspect
 import itertools
-try:
-    import numpy as np
-except:
-    pass
+import numpy as np
 
 def vectorize(product = True) -> Callable:
     def decorator(func : Callable) -> Callable:
@@ -14,24 +11,30 @@ def vectorize(product = True) -> Callable:
             all_args = dict(**args_to_kwargs, **kwargs)
             vector_args = {k : v for k, v in all_args.items() if isinstance(v, (list, np.ndarray))}
             shape = [len(v) for v in vector_args.values()]
+            if not shape:
+                return func(**all_args)
             scalar_args = {k : v for k, v in all_args.items() if k not in vector_args}
 
             if product:
                 iteration = itertools.product(*vector_args.values())
-            else:
-                iteration = zip(*vector_args.values())
+            #else:
+            #    iteration = zip(*vector_args.values())
 
-            results = []
+            results = np.empty(shape = shape, dtype = object)
+            flatiter = results.flat
             for it in iteration:
                 iteration_args = {k : v for k, v  in zip(vector_args, it)}
                 iteration_args.update(scalar_args)
-                results.append(func(**iteration_args))
-            results = np.reshape(results, shape)
-            if not shape:
-                results = results.item()
+                results[flatiter.coords] = func(**iteration_args)
+                next(flatiter)
+                #results.append(result)
+            #results = np.reshape(results, shape)
+            #if not shape:
+            #    results = results.item()
             return results
         wrapped.__signature__ = signature
         wrapped.__name__ = func.__name__
         wrapped.__module__ = func.__module__
         return wrapped
     return decorator
+

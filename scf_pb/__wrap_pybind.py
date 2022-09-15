@@ -48,6 +48,7 @@ def wrap_pybind_func(pybind_func):
     sig, func_name = signature_from_pybind_doc(doc)
 
     @functools.wraps(pybind_func)
+    @functools.lru_cache(maxsize=65536)
     def wrapper(*args, **kwargs):
         return pybind_func(*args, **kwargs)
     wrapper.__signature__ = sig

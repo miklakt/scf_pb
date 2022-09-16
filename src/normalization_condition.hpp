@@ -16,8 +16,8 @@ namespace free{
 template <class T>
 auto D(T const &chi, T const &theta, T const &kappa){
     T phi_D = phi_at_zero_Pi(chi);
-    auto integrand = [chi, phi_D, kappa](T d){return [=](T z){return phi_z(chi, phi_D, d, z, kappa);};};
-    auto integral = [integrand, theta](T d){return gauss_kronrod<double, 31>::integrate(integrand(d), T(0), d)- theta;};
+    auto integrand = [=](T d){return [=](T z){return phi_z(chi, phi_D, d, z, kappa);};};
+    auto integral = [=](T d){return gauss_kronrod<double, 31>::integrate(integrand(d), T(0), d)- theta;};
     return integral;
 }
 } // namespace free

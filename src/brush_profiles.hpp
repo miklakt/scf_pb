@@ -9,8 +9,8 @@
 #include <boost/math/interpolators/cubic_b_spline.hpp>
 
 #define UNBOUND_MEMBER_FUNCTION(x) [this](double arg){return this->x(arg);}
-#define INTEGRATE_PROFILE(F, a, b) boost::math::quadrature::gauss_kronrod<double, 31>::integrate(F, a, b);
-#define MAKE_DEFAULT_CUMULATIVE_MEMBER_FUNCTION(F) double F##_cumulative(const double z) const {return INTEGRATE_PROFILE(UNBOUND_MEMBER_FUNCTION(F), 0.0, z);}
+#define INTEGRATE_FUNC(F, a, b) boost::math::quadrature::gauss_kronrod<double, 31>::integrate(F, a, b);
+#define MAKE_DEFAULT_CUMULATIVE_MEMBER_FUNCTION(F) double F##_cumulative(const double z) const {return INTEGRATE_FUNC(UNBOUND_MEMBER_FUNCTION(F), 0.0, z);}
 
 class BrushProfile
 {
@@ -104,7 +104,6 @@ class BrushProfilePore : public BrushProfile
         return ss_scf_common::Pi(phi_z(z), m_chi);
     }
 };
-
 
 
 class BrushProfileExternal : public BrushProfile{

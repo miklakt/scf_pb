@@ -62,7 +62,7 @@ auto free_energy_all(const double N, const double sigma, const double chi, const
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     double fe_osm = particle_in_brush.osmotic_free_energy(z);
     double fe_sur = particle_in_brush.surface_free_energy(z);
-    double fe = particle_in_brush.total_free_energy(z);
+    double fe = fe_osm+fe_sur;
     return std::make_tuple(fe, fe_osm, fe_sur);
 }
 
@@ -74,28 +74,6 @@ double free_energy_external(const std::vector<double> phi, const double chi, con
     double fe = particle_in_brush.total_free_energy(z);
     return fe;
 }
-
-double free_energy_osm(const double N, const double sigma, const double chi, const double particle_width, const double particle_height, const double z){
-    double kappa = topology::kappa(N);
-    BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Cylinder particle(particle_height, particle_width);
-    auto gamma_phi = [](){};
-    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
-    double fe = particle_in_brush.osmotic_free_energy(z);
-    return fe;
-}
-
-double free_energy_surf(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double z){
-    double kappa = topology::kappa(N);
-    BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Cylinder particle(particle_height, particle_width);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
-    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
-    double fe = particle_in_brush.surface_free_energy(z);
-    return fe;
-}
-
-
 
 double phi(const double N, const double sigma, const double chi, const double z){
     double kappa = topology::kappa(N);
@@ -111,20 +89,20 @@ double D(const double N, const double sigma, const double chi){
 
 using namespace pybind11::literals;
 PYBIND11_MODULE(_scf_pb, m){
-    
+
     m.doc() = "Analytical self-consistent filed for polymer brushes, calculate polymer density profile, insertion free energy penalty and diffusion coefficient";
 
-    m.def("D_eff", &D_eff, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
-    m.def("D_eff_uncorrected", &D_eff_uncorrected, py::call_guard<py::gil_scoped_release>(), "Uncorrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
     m.def("phi", &phi, py::call_guard<py::gil_scoped_release>(), "Polymer density profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
     m.def("D", &D, py::call_guard<py::gil_scoped_release>(), "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
+
     m.def("free_energy", &free_energy, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
-    m.def("free_energy_surf", &free_energy_surf, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
-    m.def("free_energy_osm", &free_energy_osm, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+    m.def("free_energy_all", &free_energy_all, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+    m.def("free_energy_external", &free_energy_external, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+
     m.def("mobility", &particle_mobility::mobility_factor, py::call_guard<py::gil_scoped_release>(), "Mobility factor", py::kw_only{}, "phi"_a, "d"_a, "k_smooth"_a);
 
-    m.def("free_energy_external", &free_energy_external, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
+    m.def("D_eff_uncorrected", &D_eff_uncorrected, py::call_guard<py::gil_scoped_release>(), "Uncorrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
+    m.def("D_eff", &D_eff, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
     m.def("D_eff_external", &D_eff_external, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", py::kw_only{},  "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "a"_a, "b"_a);
 
-    m.def("free_energy_all", &free_energy_all, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
 }

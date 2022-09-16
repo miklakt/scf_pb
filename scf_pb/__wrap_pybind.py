@@ -47,11 +47,15 @@ def wrap_pybind_func(pybind_func):
     doc = pybind_func.__doc__
     sig, func_name = signature_from_pybind_doc(doc)
 
-    @functools.wraps(pybind_func)
-    @functools.lru_cache(maxsize=65536)
+    @functools.lru_cache(maxsize=None)
     def wrapper(*args, **kwargs):
         return pybind_func(*args, **kwargs)
+
     wrapper.__signature__ = sig
+    wrapper.__name__ = func_name
+    wrapper.__module__ = "scf_pb"
+    wrapper.__qualname__ = "scf_pb."+func_name
+    wrapper.__doc__ = doc
     return wrapper
 
 #pybind functions to wrap

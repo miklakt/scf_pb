@@ -3,6 +3,12 @@ import inspect
 import itertools
 import numpy as np
 
+try:
+    import tqdm
+    __TRY_TQDM__ = lambda x, **kwargs: tqdm.tqdm(x, **kwargs)
+except:
+    __TRY_TQDM__ = lambda x, **kwargs: x
+
 def vectorize(product = True) -> Callable:
     def decorator(func : Callable) -> Callable:
         signature = inspect.signature(func)
@@ -22,7 +28,7 @@ def vectorize(product = True) -> Callable:
 
             results = np.empty(shape = shape, dtype = object)
             flatiter = results.flat
-            for it in iteration:
+            for it in __TRY_TQDM__(iteration, total = np.product(shape)):
                 iteration_args = {k : v for k, v  in zip(vector_args, it)}
                 iteration_args.update(scalar_args)
                 results[flatiter.coords] = func(**iteration_args)
@@ -37,4 +43,3 @@ def vectorize(product = True) -> Callable:
         wrapped.__module__ = func.__module__
         return wrapped
     return decorator
-

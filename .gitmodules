@@ -1,7 +1,3 @@
-[submodule "scf_pb/cpp/external/pybind11"]
-	path = pybind11
-	url = ../../pybind/pybind11
-	branch = stable
 [submodule "pybind11"]
 	path = pybind11
 	url = ../../pybind/pybind11

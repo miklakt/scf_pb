@@ -81,6 +81,12 @@ double phi(const double N, const double sigma, const double chi, const double z)
     return brush.phi_z(z);
 }
 
+double Pi_(const double N, const double sigma, const double chi, const double z){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    return brush.Pi_z(z);
+}
+
 double D(const double N, const double sigma, const double chi){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
@@ -93,6 +99,7 @@ PYBIND11_MODULE(_scf_pb, m){
     m.doc() = "Analytical self-consistent filed for polymer brushes, calculate polymer density profile, insertion free energy penalty and diffusion coefficient";
 
     m.def("phi", &phi, py::call_guard<py::gil_scoped_release>(), "Polymer density profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
+    m.def("Pi", &Pi_, py::call_guard<py::gil_scoped_release>(), "Polymer osmotic profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
     m.def("D", &D, py::call_guard<py::gil_scoped_release>(), "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
 
     m.def("free_energy", &free_energy, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);

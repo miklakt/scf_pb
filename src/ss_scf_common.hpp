@@ -6,7 +6,7 @@
 
 #define DEFAULT_PHI_MAX 0.9999f
 #define GUESS_MINUS_MIN 0.1f
-#define USE_PREVIOUS_GUESS true
+//#define USE_PREVIOUS_GUESS false
 #define DEFAULT_MU_MAX(CHI) -std::log(1-DEFAULT_PHI_MAX) - 2*CHI*DEFAULT_PHI_MAX
 
 namespace ss_scf_common{
@@ -48,6 +48,10 @@ T phi_at_zero_Pi(T const &chi, T const &min, T const &max, T const &guess)
 template <class T>
 T phi_at_zero_Pi(T const &chi, T const &guess, T const &max = DEFAULT_PHI_MAX)
 {
+    if (chi <= 0.5f){
+        T result = static_cast<T>(0);
+        return result;
+    }
     const T min = (chi-0.5)/chi;
     return phi_at_zero_Pi(chi, min, max, guess);
 }
@@ -55,18 +59,22 @@ T phi_at_zero_Pi(T const &chi, T const &guess, T const &max = DEFAULT_PHI_MAX)
 template <class T>
 T phi_at_zero_Pi(T const &chi)
 {
-    const T min = std::max((chi-0.5)/chi, 0.0);
+    if (chi <= 0.5f){
+        T result = static_cast<T>(0);
+        return result;
+    }
+    const T min = (chi-0.5)/chi;
     const T max = DEFAULT_PHI_MAX;
-    if (USE_PREVIOUS_GUESS){
-        static T guess = min + GUESS_MINUS_MIN;
-        auto res =  phi_at_zero_Pi(chi, min, max, guess);
-        guess = res;
-        return res;
-    }
-    else{
-        T guess = min + GUESS_MINUS_MIN;
+    //if (USE_PREVIOUS_GUESS){
+    //    static T guess = (min + max)/2;
+    //    auto res =  phi_at_zero_Pi(chi, min, max, guess);
+    //    guess = res;
+    //    return res;
+    //}
+    //else{
+        T guess = (min + max)/2;
         return phi_at_zero_Pi(chi, min, max, guess);
-    }
+    //}
 }
 
 

@@ -38,11 +38,11 @@ namespace particle_mobility{
 template<typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 class ParticleBrushInteractionEnergy{
     private:
-        const ParticleType* particle;
-        const BrushType* brush;
+        const ParticleType& particle;
+        const BrushType& brush;
         const SurfaceInteractionModel gamma_phi;
     public:
-        ParticleBrushInteractionEnergy(const ParticleType* particle_, const BrushType* brush_, SurfaceInteractionModel gamma_phi_)
+        ParticleBrushInteractionEnergy(const ParticleType& particle_, const BrushType& brush_, SurfaceInteractionModel gamma_phi_)
         : particle(particle_), brush(brush_), gamma_phi(gamma_phi_){}
 
         double osmotic_free_energy(const double particle_center){

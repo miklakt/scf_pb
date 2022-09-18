@@ -8,14 +8,24 @@
 #include <iostream>
 
 int main(int argc, char* argv[]){
-    double ph=4;
-    double pw = 4;
+    double ph=10;
+    double pw = 10;
     double chi = 0;
     double chi_PC = -2;
     double sigma = 0.02;
     double N = 1000;
     double a0 = 0.18;
     double a1 = -0.09;
+
+    auto get_time = [](){return std::chrono::steady_clock::now();};
+    auto const start_time = get_time();
+    
+    auto current_time = get_time();
+    auto time_step = [&current_time, get_time](){
+        auto delta = std::chrono::duration_cast<std::chrono::microseconds>(get_time() - current_time);
+        current_time = get_time();
+        return delta.count();
+    };
 
 
     particle::Cylinder particle{ph,pw};
@@ -33,5 +43,7 @@ int main(int argc, char* argv[]){
     std::cout << "Total free energy: " << particle_in_brush.total_free_energy(z) << std::endl;
 
     std::cout << "Apparent diffusion coefficient through the brush: " << particle_in_brush.diffusion_coefficient() << std::endl;
+
+    std::cout << "Time passed:" << time_step() << std::endl;
 
 }

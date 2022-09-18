@@ -12,12 +12,17 @@ using namespace boost::math::quadrature;
 
 namespace planar
 {
+template <class T>
+double normalization_integral(T const &chi, T const &phi_D, T const& d,  T const &kappa, T const &theta){
+    auto integrand = [=](T z){return phi_z(chi, phi_D, d, z, kappa);};
+    return gauss_kronrod<double, 31>::integrate(integrand, T(0), d) - theta; 
+}
+
 namespace free{
 template <class T>
 auto D(T const &chi, T const &theta, T const &kappa){
     T phi_D = phi_at_zero_Pi(chi);
-    auto integrand = [=](T d){return [=](T z){return phi_z(chi, phi_D, d, z, kappa);};};
-    auto integral = [=](T d){return gauss_kronrod<double, 31>::integrate(integrand(d), T(0), d)- theta;};
+    auto integral = [=](T const& d){return normalization_integral(chi, phi_D, d, kappa, theta);};
     return integral;
 }
 } // namespace free
@@ -25,20 +30,41 @@ auto D(T const &chi, T const &theta, T const &kappa){
 namespace restricted{
 template <class T>
 auto phi_D(T const &chi, T const &theta, T const &kappa, T const &R){
-    auto integrand = [chi, R, kappa](T phi_D){return [=](T z){return phi_z(chi, phi_D, R, z, kappa);};};
-    auto integral = [integrand, theta, R](T phi_D){return gauss_kronrod<double, 31>::integrate(integrand(phi_D), T(0), R)- theta;};
+    auto integral = [=](T const& phi_D){return normalization_integral(chi, phi_D, R, kappa, theta);};
+    return integral;
+}
+
+template <class T>
+auto chi_opening(T const &theta, T const &kappa, T const &R){
+    auto integral = [=](T const& chi){
+        T phi_D = phi_at_zero_Pi(chi);
+        return normalization_integral(chi, phi_D, R, kappa, theta);
+    };
+    return integral;
+}
+
+template <class T>
+auto R_opening(T const &chi, T const &theta, T const &kappa){
+    T phi_D = phi_at_zero_Pi(chi);
+    auto integral = [=](T const& R){return normalization_integral(chi, phi_D, R, kappa, theta);};
     return integral;
 }
 } // namespace restricted
 } // namespace planar
 
 namespace pore{
+
+template <class T>
+double normalization_integral(T const &chi, T const &phi_D, T const& d,  T const &kappa, T const &theta, T const &pore_R){
+    auto integrand = [=](T z){return phi_z(chi, phi_D, d, z, kappa)*abs(pore_R-z)*2*M_PI;};
+    return gauss_kronrod<double, 31>::integrate(integrand, T(0), d) - theta; 
+}
+
 namespace free{
 template <class T>
 auto D(T const &chi, T const &theta, T const &kappa, T const &pore_R){
     T phi_D = phi_at_zero_Pi(chi);
-    auto integrand = [chi, phi_D, kappa, pore_R](T d){return [=](T z){return phi_z(chi, phi_D, d, z, kappa)*abs(pore_R-z)*2*M_PI;};};
-    auto integral = [integrand, theta](T d){return gauss_kronrod<double, 31>::integrate(integrand(d), T(0), d)- theta;};
+    auto integral = [=](T const& d){return normalization_integral(chi, phi_D, d, kappa, theta, pore_R);};
     return integral;
 }
 } // namespace free
@@ -47,36 +73,26 @@ namespace restricted{
 template <class T>
 auto phi_D(T const &chi, T const &theta, T const &kappa, T const &R){
     const T pore_R = R;
-    auto integrand = [chi, R, kappa, pore_R](T phi_D){return [=](T z){return phi_z(chi, phi_D, R, z, kappa)*abs(pore_R-z);};};
-    auto integral = [integrand, theta, R](T phi_D){return 2*M_PI*gauss_kronrod<double, 31>::integrate(integrand(phi_D), T(0), R)- theta;};
+    auto integral = [=](T const& phi_D){return normalization_integral(chi, phi_D, R, kappa, theta, pore_R);};
     return integral;
 }
 
 template <class T>
 auto chi_opening(T const &theta, T const &kappa, T const &R){
     const T pore_R = R;
-    auto integrand = [R, kappa, pore_R](T chi){
-        return [=](T z){
-            return phi_z(chi, phi_at_zero_Pi(chi), R, z, kappa)*abs(pore_R-z);
-        };
-    };
-
-    auto integral = [integrand, theta, R](T chi){
-        return 2*M_PI*gauss_kronrod<double, 31>::integrate(integrand(chi), T(0), R) - theta;
+    auto integral = [=](T const& chi){
+        T phi_D = phi_at_zero_Pi(chi);
+        return normalization_integral(chi, phi_D, R, kappa, theta, pore_R);
         };
     return integral;
 }
 
 template <class T>
 auto R_opening(T const &theta, T const &kappa, T const &chi){
-    auto integrand = [kappa, chi](T R){
-        return [=](T z){
-            return phi_z(chi, phi_at_zero_Pi(chi), R, z, kappa)*abs(R-z);
-        };
-    };
-
-    auto integral = [integrand, theta, chi](T R){
-        return 2*M_PI*gauss_kronrod<double, 31>::integrate(integrand(R), T(0), R) - theta;
+    T phi_D = phi_at_zero_Pi(chi);
+    auto integral = [=](T const& R){
+        const T pore_R = R;
+        return normalization_integral(chi, phi_D, R, kappa, theta, pore_R);
         };
     return integral;
 }

@@ -12,6 +12,9 @@ T kappa(T const &N, T const &eta = T(1.0)){
 
 template <class T>
 T eta(int const &g, int const &q){
+    if (g == 1){
+        return 1;
+    }
     int qq = 1;
     for (int i=1; i<g+1; ++i){
         qq+=q*i;

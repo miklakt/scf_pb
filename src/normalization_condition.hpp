@@ -13,9 +13,9 @@ using namespace boost::math::quadrature;
 namespace planar
 {
 template <class T>
-double normalization_integral(T const &chi, T const &phi_D, T const& d,  T const &kappa, T const &theta){
+T normalization_integral(T const &chi, T const &phi_D, T const& d,  T const &kappa, T const &theta){
     auto integrand = [=](T z){return phi_z(chi, phi_D, d, z, kappa);};
-    return gauss_kronrod<double, 31>::integrate(integrand, T(0), d) - theta; 
+    return gauss_kronrod<T, 31>::integrate(integrand, T(0), d) - theta;
 }
 
 namespace free{
@@ -57,7 +57,7 @@ namespace pore{
 template <class T>
 double normalization_integral(T const &chi, T const &phi_D, T const& d,  T const &kappa, T const &theta, T const &pore_R){
     auto integrand = [=](T z){return phi_z(chi, phi_D, d, z, kappa)*abs(pore_R-z)*2*M_PI;};
-    return gauss_kronrod<double, 31>::integrate(integrand, T(0), d) - theta; 
+    return gauss_kronrod<double, 31>::integrate(integrand, T(0), d) - theta;
 }
 
 namespace free{

@@ -10,7 +10,7 @@
 
 namespace surface_interaction_coefficient{
     const double chi_crit = 6.0*std::log(5.0/6.0);
-    
+
     double gamma_2poly_model(const double a0, const double a1, const double chi, const double chi_PC, const double phi){
         double chi_ads = chi_PC - chi*(1-phi);
         double psi = a0*phi + a1*phi*phi;
@@ -30,7 +30,7 @@ namespace particle_mobility{
         double x = eps*eps/(d*d);
         return x/std::pow((1+std::pow(x,k)), 1/k);
     }
-    
+
     auto mobility_phi = [](const double d, const double k){return [=](const double phi){return mobility_factor(phi, d, k);};};
 }//namespace particle_mobility
 
@@ -111,3 +111,7 @@ class ParticleBrushInteractionEnergy{
             return diffusion_coefficient(mobility_phi, a, b);
         }
 };
+
+//TODO:
+//template<typename SurfaceInteractionModel>
+//ParticleBrushInteractionEnergy<Cylinder, BrushProfilePlanar>::

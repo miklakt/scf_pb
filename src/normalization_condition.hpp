@@ -10,6 +10,21 @@ using namespace ss_scf_common;
 using namespace boost::math::tools;
 using namespace boost::math::quadrature;
 
+
+template <class F, class T>
+T solve_normalization(F integral, T const &min, T const &max, const size_t maxit = 50)
+{
+  std::uintmax_t it = maxit;
+  int digits = std::numeric_limits<T>::digits;
+
+  int get_digits = digits - 3;
+  eps_tolerance<T> tol(get_digits);
+
+  std::pair<T, T> r = toms748_solve(integral, min, max, tol, it);
+
+  return r.first + (r.second - r.first)/2;
+}
+
 namespace planar
 {
 template <class T>
@@ -98,21 +113,3 @@ auto R_opening(T const &theta, T const &kappa, T const &chi){
 }
 } // namespace restricted
 } // namespace pore
-
-template <class F, class T>
-T solve_normalization(F integral, T const &min, T const &max, const size_t maxit = 50)
-{
-  using namespace std;
-  using namespace boost::math::tools;
-  using namespace boost::math::quadrature;
-
-  std::uintmax_t it = maxit;
-  int digits = std::numeric_limits<T>::digits;
-
-  int get_digits = digits - 3;
-  eps_tolerance<T> tol(get_digits);
-
-  std::pair<T, T> r = toms748_solve(integral, min, max, tol, it);
-
-  return r.first + (r.second - r.first)/2;
-}

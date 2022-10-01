@@ -8,17 +8,17 @@
 #include "../topology.hpp"
 
 int main(int argc, char* argv[]){
-    
+
     std::cout << "Free brush-----------------------------------------------------------------" << std::endl;
-    
+
     double chi = 0.6;
     double N=1000.0;
     double sigma = 0.02;
     double kappa = topology::kappa(N);
-    
+
     auto get_time = [](){return std::chrono::steady_clock::now();};
     auto const start_time = get_time();
-    
+
     auto current_time = get_time();
     auto time_step = [&current_time, get_time](){
         auto delta = std::chrono::duration_cast<std::chrono::microseconds>(get_time() - current_time);
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
     BrushProfilePlanar brush(chi, N, sigma, kappa);
     std::cout << "Brush profile instantiated" << std::endl;
     std::cout << time_step() << std::endl;
-    
+
     double d = brush.D();
     std::cout << "Brush thickness D:" << d << std::endl;
     std::cout << "Volume concentration at the edge phi_D:" << brush.phi_D() << std::endl;
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
         std::cout << z[i]/d << "\t" << phi[i] << std::endl;
     }
     std::cout << "Time passed:" << t << std::endl;
-    
+
     std::cout << "Restricted brush------------------------------------------------------------" << std::endl;
     time_step();
     std::cout << "R opening: " << solve_normalization(planar::restricted::R_opening(chi, N*sigma, kappa), N*sigma, N) << std::endl;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
     BrushProfilePlanar brush_r(chi, N, sigma, kappa, R);
     std::cout << "Brush profile instantiated" << std::endl;
     std::cout << time_step() << std::endl;
-    
+
     double d_r = brush_r.D();
     std::cout << "Brush thickness D:" << d_r << std::endl;
     std::cout << "Volume concentration at the edge phi_D:" << brush_r.phi_D() << std::endl;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]){
     }
     std::cout << "Time passed:" << t << std::endl;
 
-    
-    
+
+
 
 }

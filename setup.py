@@ -15,15 +15,10 @@ PLAT_TO_CMAKE = {
     "win-arm64": "ARM64",
 }
 
-
-# A CMakeExtension needs a sourcedir instead of a file list.
-# The name must be the _single_ output extension from the CMake build.
-# If you need multiple extensions, see scikit-build.
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
-
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
@@ -124,12 +119,11 @@ setup(
     version="0.0.1",
     author="Mikhail Laktionov",
     author_email="miklakt@gmail.com",
-    url="https://github.com/pybind/python_example",
-    description="A test project using pybind11",
+    url="https://github.com/scf_pb",
+    description="Polymer brush self-consistent field theory calculations",
     long_description="",
     ext_modules=[CMakeExtension('scf_pb._scf_pb')],
     cmdclass=dict(build_ext=CMakeBuild),
-    #packages=["scf_pb"],
     zip_safe=False,
     packages=find_packages("."),
     python_requires=">=3.6",

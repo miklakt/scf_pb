@@ -3,7 +3,7 @@ import inspect
 import itertools
 import numpy as np
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def vectorize() -> Callable:
     def decorator(func : Callable) -> Callable:
@@ -23,26 +23,29 @@ def vectorize() -> Callable:
 
             iteration = itertools.product(*vector_args.values())
 
-            pool_results = []
             with ThreadPoolExecutor(max_workers=max_workers) as pool:
+                futures = []
                 for it in iteration:
                     iteration_args = {k : v for k, v  in zip(vector_args, it)}
                     iteration_args.update(scalar_args)
-                    #results[flatiter.coords] = func(**iteration_args)
-                    pool_results.append(pool.submit(func, **iteration_args))
-                    #next(flatiter)
-            
-            results = np.empty(shape = shape, dtype = object)
-            flatiter = results.flat
-            
-            if progressbar:
-                import tqdm
-                pool_results = tqdm.tqdm(pool_results)
-            
-            for pool_result in pool_results:
-                results[flatiter.coords] = pool_result.result()
-                next(flatiter)
-            
+                    futures.append(pool.submit(func, **iteration_args))
+
+                results = np.empty(shape = shape, dtype = object)
+                flatiter = results.flat
+                completed_futures = as_completed(futures)
+                if progressbar:
+                    import tqdm
+                    completed_futures = tqdm.tqdm(completed_futures, total = np.product(shape))
+                for future in completed_futures:
+                   results[flatiter.coords] = future.result()
+                   next(flatiter)
+
+
+            #for pool_result in pool_results:
+            #    results[flatiter.coords] = pool_result.result()
+            #    next(flatiter)
+
+
             return results
 
         wrapped.__signature__ = signature

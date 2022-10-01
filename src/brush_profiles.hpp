@@ -49,9 +49,7 @@ class BrushProfilePlanar : public BrushProfile
     }
     BrushProfilePlanar(double const &chi, double const &N, double const &sigma, double const &kappa) : BrushProfilePlanar(chi, N, sigma, kappa, std::numeric_limits<double>::max()) {};
 
-    double D() const override{
-        return m_D;
-    }
+    double D() const override;
 
     double phi_D() const override{
         return m_phi_D;

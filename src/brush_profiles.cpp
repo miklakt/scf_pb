@@ -1,4 +1,4 @@
-#include "brush_profiles.hpp"
+ #include "brush_profiles.hpp"
 
 BrushProfilePlanar::BrushProfilePlanar(double const &chi, double const &N, double const &sigma, double const &kappa, double const &R)
     : m_chi(chi), m_N(N), m_sigma(sigma), m_kappa(kappa), m_R(R), m_theta(N * sigma)

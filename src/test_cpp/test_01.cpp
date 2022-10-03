@@ -6,6 +6,8 @@
 #include "../normalization_condition.hpp"
 #include "../brush_profiles.hpp"
 #include "../topology.hpp"
+#include "../particle_energy.hpp"
+#include "../particle_geometry.hpp"
 
 int main(int argc, char* argv[]){
 
@@ -86,7 +88,17 @@ int main(int argc, char* argv[]){
     }
     std::cout << "Time passed:" << t << std::endl;
 
+    double particle_height = 4.0;
+    double particle_width = 4.0;
+    double a0 = 0.18;
+    double a1 = -0.09;
+    double chi_PC = -1.5;
+    double particle_center = 10.0;
 
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+    double fe = particle_in_brush.total_free_energy(particle_center);
 
 
 }

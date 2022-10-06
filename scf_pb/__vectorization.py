@@ -30,15 +30,18 @@ def vectorize() -> Callable:
                     iteration_args.update(scalar_args)
                     futures.append(pool.submit(func, **iteration_args))
 
-                results = np.empty(shape = shape, dtype = object)
-                flatiter = results.flat
-                completed_futures = as_completed(futures)
+
                 if progressbar:
                     import tqdm
-                    completed_futures = tqdm.tqdm(completed_futures, total = np.product(shape))
-                for future in completed_futures:
-                   results[flatiter.coords] = future.result()
-                   next(flatiter)
+                    pbar = tqdm.tqdm(total = np.product(shape))
+                    for future_completed in as_completed(futures):
+                        pbar.update()
+
+            results = np.empty(shape = shape, dtype = object)
+            flatiter = results.flat
+            for future in futures:
+                results[flatiter.coords] = future.result()
+                next(flatiter)
 
 
             #for pool_result in pool_results:

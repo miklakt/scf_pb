@@ -34,6 +34,16 @@ double D_eff(const double N, const double sigma, const double chi, const double 
     return d_eff;
 }
 
+double PC_open(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+    double pc = particle_in_brush.partition_coefficient_open();
+    return pc;
+}
+
 double D_eff_external(const std::vector<double> phi, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double a, const double b){
     BrushProfileExternal brush(phi, chi);
     particle::Cylinder particle(particle_height, particle_width);
@@ -112,4 +122,5 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("D_eff", &D_eff, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
     m.def("D_eff_external", &D_eff_external, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", py::kw_only{},  "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "a"_a, "b"_a);
 
+    m.def("PC", &PC_open, py::call_guard<py::gil_scoped_release>(), "Partition coefficient of particles in polymer brush and a semi-infinite solution (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
 }

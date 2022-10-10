@@ -15,6 +15,7 @@ def vectorize() -> Callable:
 
             args_to_kwargs = {param : arg for param, arg in zip(signature.parameters, args)}
             all_args = dict(**args_to_kwargs, **kwargs)
+
             vector_args = {k : v for k, v in all_args.items() if isinstance(v, (list, np.ndarray))}
             shape = [len(v) for v in vector_args.values()]
             if not shape:
@@ -28,8 +29,9 @@ def vectorize() -> Callable:
                 for it in iteration:
                     iteration_args = {k : v for k, v  in zip(vector_args, it)}
                     iteration_args.update(scalar_args)
+                    str_args_substitute = {k:iteration_args[v] for k, v in iteration_args.items() if isinstance(v, str)}
+                    iteration_args.update(str_args_substitute)
                     futures.append(pool.submit(func, **iteration_args))
-
 
                 if progressbar:
                     import tqdm

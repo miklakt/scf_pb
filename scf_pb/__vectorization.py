@@ -2,16 +2,18 @@ from typing import Callable
 import inspect
 import itertools
 import numpy as np
+import os
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def vectorize() -> Callable:
     def decorator(func : Callable) -> Callable:
         signature = inspect.signature(func)
+
         def wrapped(*args, **kwargs):
 
             progressbar = kwargs.pop("progressbar", False)
-            max_workers = kwargs.pop("max_workers", 1)
+            max_workers = kwargs.pop("max_workers", os.cpu_count())
 
             args_to_kwargs = {param : arg for param, arg in zip(signature.parameters, args)}
             all_args = dict(**args_to_kwargs, **kwargs)
@@ -35,7 +37,7 @@ def vectorize() -> Callable:
 
                 if progressbar:
                     import tqdm
-                    pbar = tqdm.tqdm(total = np.product(shape))
+                    pbar = tqdm.tqdm(total = np.product(shape), desc = f"{func.__name__}, {max_workers} tread(s)")
                     for future_completed in as_completed(futures):
                         pbar.update()
 
@@ -44,12 +46,6 @@ def vectorize() -> Callable:
             for future in futures:
                 results[flatiter.coords] = future.result()
                 next(flatiter)
-
-
-            #for pool_result in pool_results:
-            #    results[flatiter.coords] = pool_result.result()
-            #    next(flatiter)
-
 
             return results
 

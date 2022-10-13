@@ -96,7 +96,7 @@ template <typename ParticleType, typename BrushType, typename SurfaceInteraction
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient()
 {
     const double a = 0;
-    const double b = brush->D() - particle->width/2;
+    const double b = brush->D() - particle->height/2;
     return partition_coefficient(a, b);
 }
 
@@ -104,7 +104,7 @@ template <typename ParticleType, typename BrushType, typename SurfaceInteraction
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_open()
 {
     const double a = 0;
-    const double b = brush->D() + particle->width/2;
+    const double b = brush->D() + particle->height/2;
     return partition_coefficient(a, b);
 }
 
@@ -112,6 +112,6 @@ template <typename ParticleType, typename BrushType, typename SurfaceInteraction
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_slit(const double R)
 {
     const double a = 0;
-    const double b = std::min(R, brush->D() + particle->width/2);
+    const double b = std::min(R, brush->D() + particle->height/2);
     return partition_coefficient(a, b);
 }

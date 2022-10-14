@@ -49,7 +49,7 @@ template <typename ParticleType, typename BrushType, typename SurfaceInteraction
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient()
 {
     const double a = particle->height / 2;
-    const double b = brush->D() + particle->height / 2;
+    const double b = brush->D() + particle->height;
     return diffusion_coefficient(a, b);
 }
 
@@ -71,7 +71,7 @@ template <typename MobilityFunc>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi)
 {
     const double a = particle->height / 2;
-    const double b = brush->D() + particle->height / 2;
+    const double b = brush->D() + particle->height;
     return diffusion_coefficient(mobility_phi, a, b);
 }
 

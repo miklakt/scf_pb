@@ -1,3 +1,4 @@
 ipython
+ipykernel
 matplotlib
 tqdm

@@ -124,5 +124,5 @@ PYBIND11_MODULE(_scf_pb, m){
 
     m.def("PC", &PC_open, py::call_guard<py::gil_scoped_release>(), "Partition coefficient of particles in polymer brush and a semi-infinite solution (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
 
-    m.def("mobility_factor", &particle_mobility::mobility_factor, py::call_guard<py::gil_scoped_release>(), "Polymer network mobility factor", "phi"_a, "d"_a, "k_smooth"_a);
+    m.def("mobility_factor", &particle_mobility::mobility_factor, py::call_guard<py::gil_scoped_release>(), "Polymer network mobility factor", py::kw_only{}, "phi"_a, "d"_a, "k_smooth"_a);
 }

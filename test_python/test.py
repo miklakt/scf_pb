@@ -22,3 +22,5 @@ scf_pb.phi_v(N=1000, chi=0.3, z=0, sigma = sigma)
 chi = [0, 0.2, 0.4, 0.6, 0.8, 1.0]
 scf_pb.phi_v(N=1000, chi=chi, z=0, sigma = sigma)
 # %%
+scf_pb.mobility_factor_v(phi=0.1, d=10.0, k_smooth=1.0)
+# %%

@@ -12,12 +12,10 @@ As it is shown in ref[] analytical strong-stretching self-consistent field (SS-S
 
 Mean field Flory-Huggins approximation expresses segment potential in terms of the polymer density. Together with normalization condition ∫<sub>0</sub><sup>H</sup>ϕ(z)dz = N⋅σ  and vanishing osmotic pressure condition Π(z=D)=0 it defines the polymer density ϕ as a function of the distance z from grafting surface.
 
-
 - log(1 - φ) - 2⋅χ⋅φ - log(1 - φ<sub>H</sub>) - 2⋅χ⋅φ<sub>H</sub> = (3π<sup>2</sup>/8N<sup>2</sup>)(H<sup>2</sup>-z<sup>2</sup>)
 
 On the l.h.s. of the equation is difference in segment potential at a given distance z and segment potential at the edge of the brush, where H is the brush thickness,  ϕ<sub>H</sub> = ϕ(z=H) and  χ<sub>PS</sub> - polymer-solvent interaction parameter.
 We define insertion free energy penalty ΔF as a change in free energy when a particle is moved from an infinite distance from brush to a given distance from the grafting surface. Then the free energy penalty can be approximated as
-
 
 ## Usage
 
@@ -27,8 +25,15 @@ We define insertion free energy penalty ΔF as a change in free energy when a pa
 
 ### Python
 
-After the import you can get a function to evaluate
-volume fraction, osmotic pressure, insertion free energy penalty, diffusion coefficient, partition coefficient for given parameters.
+The library provides functions to calculate
+
+- volume fraction
+- osmotic pressure
+- insertion free energy penalty(total, surface and volume term)
+- diffusion coefficient
+- partition coefficient
+
+For convenience vectorized versions of aforesaid functions are accessible with postfix _v after the function name (e.g. phi and phi_v). On or a set of the arguments of the vectorized version can be arrays or lists. When several arguments are lists, than the result will be calculated for a cartesian product of such lists, with the axes ordered the same way as keyword arguments appear in the function call.
 The next example shows volume concentration calculations
 
 ```python
@@ -71,7 +76,7 @@ np.shape(phi)
 
 ```
 
-In this example we calculate phi-profile for the all integer values of distance from zero
+In this example we calculate ϕ-profile for the all integer values of distance from zero
 to the brush edge.
 
 ```python
@@ -114,10 +119,14 @@ phi = scf_pb.phi_v(N=1000, chi=0.6, sigma = 0.02, z=z)
 ```
 
 ## Installation
+
 To install the package run in your python environment
+
 ```
-pip install [path_to_the_package]
+python setup.py bdist_wheel
+pip install dist/scf_pb-{version}-{python.version}-{os_platform}.whl
 ```
 
 ## Notes
+
 The package is written as a part of PhD thesis work of the author.

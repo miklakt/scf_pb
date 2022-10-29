@@ -105,6 +105,7 @@ T mu_inv(T const &mu, T const &chi){
 //Polymer density at given z
 template <class T>
 T phi_z(T const &chi, T const &phi_D, T const &d, T const &z, T const &kappa){
+    if (z>d){return T(0);}
     T mu_D = mu_phi(phi_D, chi);
     T mu = mu_z(mu_D, d, z, kappa);
     T phi = mu_inv(mu, chi);

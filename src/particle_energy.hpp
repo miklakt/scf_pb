@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <stdexcept>
 
 #include "ss_scf_common.hpp"
 #include "normalization_condition.hpp"

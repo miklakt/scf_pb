@@ -1,23 +1,34 @@
-
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::osmotic_free_energy(const double particle_center)
 {
-    auto integrand = [this, &particle_center](const double z)
+    //get integration limits
+    const double z0 = particle_center - particle->height / 2;
+    //particle is outside the brush
+    if (z0 > brush->D()){
+        return 0.0;
+    }
+    const double right_limit = std::min(particle->height, brush->D()-z0);
+
+    auto integrand = [this, &z0, &particle_center](const double z)
     {
-        const double z0 = particle_center - particle->height / 2;
         return brush->Pi_z(z0 + z) * particle->volume_integrand(z);
     };
-    return INTEGRATE_FUNC(integrand, 0, particle->height);
+    return INTEGRATE_FUNC(integrand, 0, right_limit);
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::surface_free_energy(const double particle_center)
 {
-    const double A0 = particle->surface_edges()[0];
-    const double A1 = particle->surface_edges()[1];
-
     const double z0 = particle_center - particle->height / 2;
     const double z1 = particle_center + particle->height / 2;
+    //particle is outside the brush
+    if (z0 > brush->D()){
+        return 0.0;
+    }
+    const double right_limit = std::min(particle->height, brush->D()-z0);
+
+    const double A0 = particle->surface_edges()[0];
+    const double A1 = particle->surface_edges()[1];
 
     const double phi0 = brush->phi_z(z0);
     const double phi1 = brush->phi_z(z1);
@@ -34,14 +45,15 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
         return phi * gamma * particle->surface_integrand(arg);
     };
 
-    return INTEGRATE_FUNC(integrand, 0.0, particle->height) + free_energy_at_boundaries;
+    return INTEGRATE_FUNC(integrand, 0, right_limit) + free_energy_at_boundaries;
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const double a, const double b)
 {
+    if (a>=b){throw std::invalid_argument( "a>=b" );}
     auto integrand = [this](const double z)
-    { return std::exp(total_free_energy(z)); };
+    { return std::exp(total_free_energy(z));};
     return (b - a) / INTEGRATE_FUNC(integrand, a, b);
 }
 
@@ -49,7 +61,7 @@ template <typename ParticleType, typename BrushType, typename SurfaceInteraction
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient()
 {
     const double a = particle->height / 2;
-    const double b = brush->D() + particle->height;
+    const double b = brush->D() + particle->height/2;
     return diffusion_coefficient(a, b);
 }
 
@@ -71,7 +83,7 @@ template <typename MobilityFunc>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi)
 {
     const double a = particle->height / 2;
-    const double b = brush->D() + particle->height;
+    const double b = brush->D() + particle->height/2;
     return diffusion_coefficient(mobility_phi, a, b);
 }
 

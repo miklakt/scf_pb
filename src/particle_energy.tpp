@@ -92,22 +92,22 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 {
     auto integrand = [this](const double z)
     { return std::exp(-total_free_energy(z)); };
-    const double left = a - particle->height / 2;
-    const double right = b - particle->height / 2;
+    //const double left = a - particle->height / 2;
+    //const double right = b - particle->height / 2;
     return INTEGRATE_FUNC(integrand, a, b) / (b - a);
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient(const double b)
 {
-    const double a = 0;
+    const double a = particle->height / 2;
     return partition_coefficient(a, b);
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient()
 {
-    const double a = 0;
+    const double a = particle->height / 2;
     const double b = brush->D() - particle->height/2;
     return partition_coefficient(a, b);
 }
@@ -115,7 +115,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_open()
 {
-    const double a = 0;
+    const double a = particle->height / 2;
     const double b = brush->D() + particle->height/2;
     return partition_coefficient(a, b);
 }
@@ -123,7 +123,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_slit(const double R)
 {
-    const double a = 0;
+    const double a = particle->height / 2;
     const double b = std::min(R, brush->D() + particle->height/2);
     return partition_coefficient(a, b);
 }

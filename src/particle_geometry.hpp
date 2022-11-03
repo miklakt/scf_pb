@@ -16,6 +16,9 @@ class Particle{
         virtual double volume() const = 0;
         virtual double surface() const = 0;
 
+        virtual double z0(const double particle_center) const {return particle_center - height/2;}
+        virtual double z1(const double particle_center) const {return particle_center + height/2;}
+
         virtual double d_equivalent(){return std::cbrt(6*volume()/M_PI);}
 };
 

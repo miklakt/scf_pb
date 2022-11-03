@@ -1,51 +1,8 @@
 
-template <typename ParticleType, typename BrushType>
-ParticlePosition ParticleInBrush<ParticleType, BrushType>::where()
-{
-    if (particle_center < particle->height/2)
-    {
-        return ParticlePosition::invalid;
-    }
-    if ((particle_center >= particle->height/2 ) && (particle_center <= brush->D()-particle->height/2))
-    {
-        return ParticlePosition::inside;
-    }
-    if ((particle_center > brush->D()-particle->height/2) && (particle_center <= brush->D()+particle->height/2))
-    {
-        return ParticlePosition::edge;
-    }
-    if (particle_center>restriction)
-    {
-        return ParticlePosition::invalid;
-    }
-    return ParticlePosition::outside;
-}
-
-
-template <typename ParticleType, typename BrushType>
-std::array<double, 2> ParticleInBrush<ParticleType, BrushType>::get_integration_interval()
-{
-    switch (particle_position)
-    {
-    case ParticlePosition::invalid:
-        throw std::invalid_argument("invalid particle position in the brush");
-        break;
-    
-    case ParticlePosition::inside:
-        return std::array<double,2>{particle_center - particle->height/2, particle_center + particle->height/2};
-    
-    default:
-        break;
-    }
-    return std::array<double,2>{particle_center - particle->height/2, particle_center + particle->height/2};
-}
-
-
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::osmotic_free_energy(const double particle_center)
 {
-    //get integration limits
-    const double z0 = particle_center - particle->height / 2;
+    const double z0 = particle->z0(particle_center);
     //particle is outside the brush
     if (z0 > brush->D()){
         return 0.0;
@@ -62,12 +19,12 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::surface_free_energy(const double particle_center)
 {
-    const double z0 = particle_center - particle->height / 2;
-    const double z1 = particle_center + particle->height / 2;
+    const double z0 = particle->z0(particle_center);
     //particle is outside the brush
     if (z0 > brush->D()){
         return 0.0;
     }
+    const double z1 = particle->z1(particle_center);
     const double right_limit = std::min(particle->height, brush->D()-z0);
 
     const double A0 = particle->surface_edges()[0];

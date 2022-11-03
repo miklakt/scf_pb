@@ -22,7 +22,7 @@ public:
     virtual double phi_z(const double z) const = 0;
     virtual MAKE_DEFAULT_CUMULATIVE_MEMBER_FUNCTION(phi_z)
 
-        virtual double Pi_z(const double z) const = 0;
+    virtual double Pi_z(const double z) const = 0;
     virtual MAKE_DEFAULT_CUMULATIVE_MEMBER_FUNCTION(Pi_z)
 };
 

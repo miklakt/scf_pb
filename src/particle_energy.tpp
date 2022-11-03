@@ -1,3 +1,46 @@
+
+template <typename ParticleType, typename BrushType>
+ParticlePosition ParticleInBrush<ParticleType, BrushType>::where()
+{
+    if (particle_center < particle->height/2)
+    {
+        return ParticlePosition::invalid;
+    }
+    if ((particle_center >= particle->height/2 ) && (particle_center <= brush->D()-particle->height/2))
+    {
+        return ParticlePosition::inside;
+    }
+    if ((particle_center > brush->D()-particle->height/2) && (particle_center <= brush->D()+particle->height/2))
+    {
+        return ParticlePosition::edge;
+    }
+    if (particle_center>restriction)
+    {
+        return ParticlePosition::invalid;
+    }
+    return ParticlePosition::outside;
+}
+
+
+template <typename ParticleType, typename BrushType>
+std::array<double, 2> ParticleInBrush<ParticleType, BrushType>::get_integration_interval()
+{
+    switch (particle_position)
+    {
+    case ParticlePosition::invalid:
+        throw std::invalid_argument("invalid particle position in the brush");
+        break;
+    
+    case ParticlePosition::inside:
+        return std::array<double,2>{particle_center - particle->height/2, particle_center + particle->height/2};
+    
+    default:
+        break;
+    }
+    return std::array<double,2>{particle_center - particle->height/2, particle_center + particle->height/2};
+}
+
+
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::osmotic_free_energy(const double particle_center)
 {

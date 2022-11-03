@@ -44,6 +44,33 @@ namespace particle_mobility
       { return mobility_factor(phi, d, k); }; };
 } // namespace particle_mobility
 
+
+
+enum class ParticlePosition{inside, edge, outside, invalid};
+
+template <typename ParticleType, typename BrushType>
+class ParticleInBrush
+{
+    private:
+    const ParticleType *particle;
+    const BrushType *brush;
+
+    public:
+
+    double particle_center;
+    double restriction;
+    ParticlePosition particle_position;
+    double i_left;
+    double i_right;
+
+    ParticleInBrush(const ParticleType *particle_, const BrushType *brush_, const double particle_center_ = 0, const double restriction_ = std::numeric_limits<double>::max())
+        : particle(particle_), brush(brush_), particle_center(particle_center_), restriction(restriction_) {particle_position = where();}
+    
+    ParticlePosition where();
+    std::array<double, 2> get_integration_interval();
+};
+
+
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 class ParticleBrushInteractionEnergy
 {

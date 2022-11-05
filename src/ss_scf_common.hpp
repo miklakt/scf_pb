@@ -112,21 +112,4 @@ T phi_z(T const &chi, T const &phi_D, T const &d, T const &z, T const &kappa){
     return phi;
 }
 
-//const double chi_crit = 6.0*std::log(5.0/6.0);
-//double gamma_2poly_model(const double a1, const double a2, const double chi, const double chi_PC, const double phi){
-//    double chi_ads = chi_PC - chi*(1-phi);
-//    double psi = a1*phi + a2*phi*phi;
-//    double gamma = (chi_ads-chi_crit)*psi;
-//    return gamma;
-//}
-//
-//const double mobility_factor(const double phi, const double d, const double k){
-//    if (phi == 0){
-//        return 1;
-//    }
-//    double eps = 1/phi;
-//    double x = eps*eps/(d*d);
-//    return x/std::pow((1+std::pow(x,k)), 1/k);
-//}
-
 }

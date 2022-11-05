@@ -22,6 +22,8 @@ class Particle{
         virtual double d_equivalent(){return std::cbrt(6*volume()/M_PI);}
 };
 
+
+
 namespace particle{
 class Cylinder: public Particle
 {
@@ -60,3 +62,70 @@ class Cylinder: public Particle
         }
 };
 }
+
+namespace particle::integrators{
+    template <typename ParticleType, typename FunctionToIntegrate>
+    double integrate_over_volume(const ParticleType *particle, const FunctionToIntegrate func, const double a, const double b)
+    {
+        auto integrand = [=](const double z){
+            return particle->volume_integrand(z)*func(z);
+        };
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b);
+    }
+    
+    template <typename ParticleType, typename FunctionToIntegrate>
+    double integrate_over_volume(const ParticleType *particle, const FunctionToIntegrate func, const double b)
+    {
+        return integrate_over_volume(particle, func, 0.0, b);
+    }
+
+    template <typename ParticleType, typename FunctionToIntegrate>
+    double integrate_over_volume(const ParticleType *particle, const FunctionToIntegrate func)
+    {
+        return integrate_over_volume(particle, func, 0.0, particle->height);
+    }
+
+    template <typename ParticleType, typename FunctionToIntegrate>
+    double integrate_over_surface(const ParticleType *particle, const FunctionToIntegrate func, const double a, const double b)
+    {
+        auto integrand = [=](const double z){
+            return particle->surface_integrand(z)*func(z);
+        };
+        auto A = particle->surface_edges();
+        double caps = (a==0.0)*A[0]*func(a)+(b==particle->height)*A[1]*func(b);
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b) + caps;
+    }
+
+    template <typename ParticleType, typename FunctionToIntegrate>
+    double integrate_over_surface(const ParticleType *particle, const FunctionToIntegrate func, const double b){
+        return integrate_over_surface(particle, func, 0.0, b);
+    }
+
+    template <typename ParticleType, typename FunctionToIntegrate>
+    double integrate_over_surface(const ParticleType *particle, const FunctionToIntegrate func){
+        return integrate_over_surface(particle, func, 0.0, particle->height);
+    }
+
+    
+    //simple integration over cylinder
+    template <typename FunctionToIntegrate>
+    double integrate_over_volume(const particle::Cylinder *particle, const FunctionToIntegrate func, const double a, const double b)
+    {
+        auto integrand = [=](const double z){
+            return func(z);
+        };
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b)*particle->surface_edges()[0];
+    }
+
+    template <typename FunctionToIntegrate>
+    double integrate_over_surface(const particle::Cylinder *particle, const FunctionToIntegrate func, const double a, const double b)
+    {
+        auto integrand = [=](const double z){
+            return func(z);
+        };
+        auto A = particle->surface_edges();
+        double caps = (a==0.0)*A[0]*func(a)+(b==particle->height)*A[1]*func(b);
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b)*M_PI*particle->width*2 + caps;
+    }
+    
+}//namespace integrators

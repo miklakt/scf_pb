@@ -69,3 +69,44 @@ public:
     double D() const override { return m_D; }
     double phi_D() const override { return m_phi_D; }
 };
+
+namespace brush::integrators{
+
+const double ALMOST_ZERO = 1e-5;
+
+template <typename BrushType, typename FunctionToIntegrate>
+double integrate_over_z(const BrushType *brush, const FunctionToIntegrate func_z, const double a, const double b){
+    double right_limit = std::min(b, brush->D());
+    double I = boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, a, right_limit);
+    double rest = func_z(right_limit)*(b-right_limit);
+    return I;
+}
+
+template <typename BrushType, typename ParticleType, typename FunctionToIntegrate>
+double integrate_over_z(const BrushType *brush, const ParticleType *particle, const FunctionToIntegrate func_z, const double a, const double b){
+    auto h = particle->height;
+    auto D = brush->D();
+
+    if (b<=D-h){
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, a, b);
+    }
+    else if (b<=D){
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, a, D-h)+ boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, D-h, b);
+    }
+    else {
+        return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, a, D-h)+boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, D-h, D) + func_z(D)*(b-D);
+    }
+}
+
+template <typename BrushType, typename FunctionToIntegrate>
+double integrate_phi_dependent_over_z(const BrushType *brush, const FunctionToIntegrate func_phi, const double a, const double b){
+    double right_limit = std::min(b, brush->D());
+    auto func_z = [=](const double z){
+        return func_phi(brush->phi_z(z));
+    };
+    double I =  boost::math::quadrature::gauss_kronrod<double, 31>::integrate(func_z, a, right_limit);
+    double rest = func_phi(0.0)*(b-right_limit);
+    return I+rest;
+}
+
+}//namespace brush::integrators

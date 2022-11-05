@@ -57,35 +57,34 @@ public:
     ParticleBrushInteractionEnergy(const ParticleType *particle_, const BrushType *brush_, SurfaceInteractionModel gamma_phi_)
         : particle(particle_), brush(brush_), gamma_phi(gamma_phi_) {}
 
-    double osmotic_free_energy(const double particle_center);
+    double osmotic_free_energy(const double z0);
 
-    double surface_free_energy(const double particle_center);
+    double surface_free_energy(const double z0);
 
-    double total_free_energy(const double particle_center)
+    double total_free_energy(const double z0)
     {
-        return surface_free_energy(particle_center) + osmotic_free_energy(particle_center);
+        return surface_free_energy(z0) + osmotic_free_energy(z0);
     }
 
-    double diffusion_coefficient(const double a, const double b);
+    double partition_coefficient(const double a, const double b);
+    double partition_coefficient();
+    double partition_coefficient_open();
+    double partition_coefficient_slit(const double R);
 
+    double diffusion_coefficient(const double a, const double b);
     double diffusion_coefficient();
+    double diffusion_coefficient_open();
+    double diffusion_coefficient_slit(const double R);
 
     template <typename MobilityFunc>
     double diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b);
-
     template <typename MobilityFunc>
     double diffusion_coefficient(const MobilityFunc mobility_phi);
-
-    double partition_coefficient(const double a, const double b);
-    double partition_coefficient(const double b);
-    double partition_coefficient();
-
-    double partition_coefficient_open();
-    double partition_coefficient_slit(const double R);
+    template <typename MobilityFunc>
+    double diffusion_coefficient_open(const MobilityFunc mobility_phi);
+    template <typename MobilityFunc>
+    double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R);
 };
 
 // template implementation file
 #include "particle_energy.tpp"
-// TODO:
-// ParticleBrushInteractionEnergy<Cylinder, BrushProfilePlanar> specialization
-// Considering the fact of integrating over constant cross-section area

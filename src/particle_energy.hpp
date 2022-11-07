@@ -57,33 +57,39 @@ public:
     ParticleBrushInteractionEnergy(const ParticleType *particle_, const BrushType *brush_, SurfaceInteractionModel gamma_phi_)
         : particle(particle_), brush(brush_), gamma_phi(gamma_phi_) {}
 
-    double osmotic_free_energy(const double z0);
+    double osmotic_free_energy(const double z0) const;
 
-    double surface_free_energy(const double z0);
+    double surface_free_energy(const double z0) const;
 
-    double total_free_energy(const double z0)
+    double total_free_energy(const double z0) const
     {
         return surface_free_energy(z0) + osmotic_free_energy(z0);
     }
 
-    double partition_coefficient(const double a, const double b);
-    double partition_coefficient();
-    double partition_coefficient_open();
-    double partition_coefficient_slit(const double R);
+    template <typename MobilityFunc>
+    double mobility_factor(const MobilityFunc mobility_phi, const double z0) const;
 
-    double diffusion_coefficient(const double a, const double b);
-    double diffusion_coefficient();
-    double diffusion_coefficient_open();
-    double diffusion_coefficient_slit(const double R);
+    //template <typename MobilityFunc>
+    //double particle_concentration(const double z0);
+
+    double partition_coefficient(const double a, const double b) const;
+    double partition_coefficient() const;
+    double partition_coefficient_open() const;
+    double partition_coefficient_slit(const double R) const;
+
+    double diffusion_coefficient(const double a, const double b) const;
+    double diffusion_coefficient() const;
+    double diffusion_coefficient_open() const;
+    double diffusion_coefficient_slit(const double R) const;
 
     template <typename MobilityFunc>
-    double diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b);
+    double diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b) const;
     template <typename MobilityFunc>
-    double diffusion_coefficient(const MobilityFunc mobility_phi);
+    double diffusion_coefficient(const MobilityFunc mobility_phi) const;
     template <typename MobilityFunc>
-    double diffusion_coefficient_open(const MobilityFunc mobility_phi);
+    double diffusion_coefficient_open(const MobilityFunc mobility_phi) const;
     template <typename MobilityFunc>
-    double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R);
+    double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R) const;
 };
 
 // template implementation file

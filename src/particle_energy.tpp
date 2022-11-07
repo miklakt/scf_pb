@@ -1,5 +1,5 @@
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::osmotic_free_energy(const double z0)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::osmotic_free_energy(const double z0) const
 {
     //particle is outside the brush
     if (z0 > brush->D()){
@@ -12,7 +12,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::surface_free_energy(const double z0)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::surface_free_energy(const double z0) const
 {
     //particle is outside the brush
     if (z0 > brush->D()){
@@ -32,7 +32,15 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const double a, const double b)
+template <typename MobilityFunc>
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::mobility_factor(const MobilityFunc mobility_phi, const double z0) const
+{
+    const double phi = brush->phi_z(z0);
+    return mobility_phi(phi);
+}
+
+template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const double a, const double b) const
 {
     if (a>=b){throw std::invalid_argument( "a>=b" );}
     auto integrand = [this](const double z)
@@ -41,7 +49,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient()
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient() const
 {
     const double a = 0.0;
     const double b = brush->D() - particle->height;
@@ -49,7 +57,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_open()
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_open() const
 {
     const double a = 0.0;
     const double b = brush->D();
@@ -57,7 +65,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_slit(const double R)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_slit(const double R) const
 {
     const double a = 0.0;
     const double b = std::min(R, brush->D());
@@ -66,20 +74,22 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b) const
 {
     auto integrand = [this, mobility_phi](const double z)
     {
-        const double phi = brush->phi_z(z);
-        const double mobility_factor = mobility_phi(phi);
-        return std::exp(total_free_energy(z)) / mobility_factor;
+        //const double phi = brush->phi_z(z);
+        //const double mobility_factor = mobility_phi(phi);
+        return std::exp(total_free_energy(z)) / mobility_factor(mobility_phi, z);
     };
     return (b - a) / INTEGRATE_FUNC(integrand, a, b);
 }
 
+
+
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi) const
 {
     const double a = 0;
     const double b = brush->D() - particle->height;
@@ -88,7 +98,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_open(const MobilityFunc mobility_phi)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_open(const MobilityFunc mobility_phi) const
 {
     const double a = 0;
     const double b = brush->D();
@@ -97,7 +107,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R) const
 {
     const double a = 0;
     const double b = std::min(R, brush->D());
@@ -105,7 +115,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient(const double a, const double b)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient(const double a, const double b) const
 {
     auto integrand = [this](const double z)
     { return std::exp(-total_free_energy(z)); };
@@ -113,7 +123,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient()
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient() const
 {
     const double a = 0;
     const double b = brush->D() - particle->height;
@@ -121,7 +131,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_open()
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_open() const
 {
     const double a = 0;
     const double b = brush->D();
@@ -129,7 +139,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
-double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_slit(const double R)
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient_slit(const double R) const
 {
     const double a = 0;
     const double b = std::min(R, brush->D());

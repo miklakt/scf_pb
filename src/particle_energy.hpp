@@ -92,11 +92,14 @@ public:
     double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R) const;
 
     template <typename MobilityFunc>
-    double sink_flux(const MobilityFunc mobility_phi, const double b, const double c_bulk) const;
+    double particle_concentration(const MobilityFunc mobility_phi, const double l, const double z0, const double c_bulk) const;
 
     template <typename MobilityFunc>
-    double particle_concentration(const MobilityFunc mobility_phi, const double b, const double z0, const double c_bulk) const;
-
+    double partition_coefficient_perfect_sink(const MobilityFunc mobility_phi, const double b, const double source_dist, const double c_bulk) const;
+    template <typename MobilityFunc>
+    double partition_coefficient_perfect_sink(const MobilityFunc mobility_phi, const double source_dist, const double c_bulk) const;
+    template <typename MobilityFunc>
+    double partition_coefficient_perfect_sink_open(const MobilityFunc mobility_phi, const double source_dist, const double c_bulk) const;
 };
 
 // template implementation file

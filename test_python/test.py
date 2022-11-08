@@ -32,15 +32,33 @@ scf_pb.phi_v(N=1000, chi=chi, z=0, sigma = sigma)
 scf_pb.mobility_factor_v(phi=0.1, d=10.0, k_smooth=1.0)
 # %%
 H = scf_pb.D(N=1000, sigma = 0.02, chi = 0.5)
-z = np.linspace(0, H+10)
-conc = scf_pb.conc_profile_v(
+z = np.linspace(0, H+100)
+conc = scf_pb.conc_profile_fixed_source_v(
     N=1000, sigma = 0.02, 
-    chi = 0.5, chi_PC = -1.5, 
+    chi = 0.6, chi_PC = -0.5, 
     a0=0.18, a1=-0.09, 
     particle_width=8, particle_height = 8, 
     k_smooth = 1, 
     progressbar = True,
-    l=10,
+    source_dist=H+50,
     z=z
     )
+plt.plot(z, conc)
+# %%
+start_time = time.time()
+chi = np.linspace(0, 1, 50)
+chi_PC = [0, -0.5, -1.0, -1.5, -2.0, -3.0, -4.0]
+PC_sink = scf_pb.PC_perfect_sink_v(
+    N=1000, sigma = 0.02, 
+    chi_PC = chi_PC, chi = np.linspace(0, 1, 50),
+    a0=0.18, a1=-0.09, 
+    particle_width=8, particle_height = 8, 
+    k_smooth = 1,
+    l=50,
+    progressbar = True
+    )
+print("--- %s seconds ---" % (time.time() - start_time))
+#plt.plot(chi, PC)
+[plt.plot(chi, PC_sink_, label = chi_PC_) for PC_sink_, chi_PC_ in zip(PC_sink, chi_PC)]
+plt.legend()
 # %%

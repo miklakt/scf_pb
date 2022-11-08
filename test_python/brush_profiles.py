@@ -18,7 +18,7 @@ def Pi_py(phi, chi):
 N=1000
 sigma = 0.02
 chi = np.arange(0, 1.1, 0.1)
-D = scf_pb.D_v(N=N, sigma=sigma, chi=chi)
+D = scf_pb.D_v(N=N, sigma=sigma, chi=chi)+100
 z = [np.linspace(0, D_) for D_ in D]
 phi = [scf_pb.phi_v(N=N, sigma=sigma, chi=chi_, z = z_) for z_, chi_ in zip(z, chi)]
 Pi = [scf_pb.Pi_v(N=N, sigma=sigma, chi=chi_, z = z_) for z_, chi_ in zip(z, chi)]

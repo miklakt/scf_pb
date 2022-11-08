@@ -66,7 +66,8 @@ class Cylinder: public Particle
 namespace particle::integrators{
     template <typename ParticleType, typename FunctionToIntegrate>
     double integrate_over_volume(const ParticleType *particle, const FunctionToIntegrate func, const double a, const double b)
-    {
+    {   
+        if (a==b){return 0;}
         auto integrand = [=](const double z){
             return particle->volume_integrand(z)*func(z);
         };
@@ -87,7 +88,8 @@ namespace particle::integrators{
 
     template <typename ParticleType, typename FunctionToIntegrate>
     double integrate_over_surface(const ParticleType *particle, const FunctionToIntegrate func, const double a, const double b)
-    {
+    {   
+        if (a==b){return 0;}
         auto integrand = [=](const double z){
             return particle->surface_integrand(z)*func(z);
         };
@@ -110,7 +112,8 @@ namespace particle::integrators{
     //simple integration over cylinder
     template <typename FunctionToIntegrate>
     double integrate_over_volume(const particle::Cylinder *particle, const FunctionToIntegrate func, const double a, const double b)
-    {
+    {   
+        if (a==b){return 0;}
         auto integrand = [=](const double z){
             return func(z);
         };
@@ -119,7 +122,8 @@ namespace particle::integrators{
 
     template <typename FunctionToIntegrate>
     double integrate_over_surface(const particle::Cylinder *particle, const FunctionToIntegrate func, const double a, const double b)
-    {
+    {   
+        if (a==b){return 0;}
         auto integrand = [=](const double z){
             return func(z);
         };

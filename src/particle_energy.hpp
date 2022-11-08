@@ -90,6 +90,13 @@ public:
     double diffusion_coefficient_open(const MobilityFunc mobility_phi) const;
     template <typename MobilityFunc>
     double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R) const;
+
+    template <typename MobilityFunc>
+    double sink_flux(const MobilityFunc mobility_phi, const double b, const double c_bulk) const;
+
+    template <typename MobilityFunc>
+    double particle_concentration(const MobilityFunc mobility_phi, const double b, const double z0, const double c_bulk) const;
+
 };
 
 // template implementation file

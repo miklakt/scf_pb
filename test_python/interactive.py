@@ -70,7 +70,7 @@ z, phi = get_phi_profile(N, sigma, chi_slider.val)
 #z = np.arange(0,200, 0.5)
 #phi = scf_pb.phi_v(N=N, sigma=sigma, chi=chi_PC_slider.val, z=z)
 _, fe, fe_osm, fe_surf = get_free_energy_profile(N, sigma, chi_slider.val, chi_PC_slider.val, d_slider.val)
-mobility_factor = scf_pb.mobility_v(phi, d_slider.val, k_smooth=4)
+mobility_factor = scf_pb.D_z_v(N=N, sigma=sigma, chi = chi_slider.val, chi_PC= chi_PC_slider.val, particle_width = d_slider.val, particle_height =  d_slider.val, k_smooth = 1, z=z, a0=a0, a1=a1)
 
 line, = ax[0].plot(z, phi, label = "$\phi$")
 line2, = ax[1].plot(z, fe, label = "$F_{tot}$")
@@ -106,7 +106,8 @@ def update(val):
     #z = np.arange(0,200, 0.5)
     #phi = scf_pb.phi_v(N=N, sigma=sigma, chi=chi_PC_slider.val, z=z)
     _, fe, fe_osm, fe_surf = get_free_energy_profile(N, sigma, chi_slider.val, chi_PC_slider.val, d_slider.val)
-    mobility_factor = scf_pb.mobility_v(phi, d_slider.val, k_smooth=4)
+    #mobility_factor = scf_pb.mobility_v(phi, d_slider.val, k_smooth=4)
+    mobility_factor = scf_pb.D_z_v(N=N, sigma=sigma, chi = chi_slider.val, chi_PC= chi_PC_slider.val, particle_width = d_slider.val, particle_height =  d_slider.val, k_smooth = 1, z=z, a0=a0, a1=a1)
     phi_max = max(phi_max, max(phi))
 
 

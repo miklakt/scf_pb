@@ -82,7 +82,8 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
         //const double mobility_factor = mobility_phi(phi);
         return std::exp(total_free_energy(z)) / mobility_factor(mobility_phi, z);
     };
-    return (b - a) / INTEGRATE_FUNC(integrand, a, b);
+    //return (b - a) / INTEGRATE_FUNC(integrand, a, b);
+    return (b - a) / brush::integrators::integrate_over_z(brush, particle, integrand, a, b);
 }
 
 
@@ -144,4 +145,24 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     const double a = 0;
     const double b = std::min(R, brush->D());
     return partition_coefficient(a, b);
+}
+
+template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+template <typename MobilityFunc>
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::sink_flux(const MobilityFunc mobility_phi, const double b, const double c_bulk) const
+{
+    return c_bulk*diffusion_coefficient(mobility_phi, 0.0, b)/b;
+}
+
+
+template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+template <typename MobilityFunc>
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::particle_concentration(const MobilityFunc mobility_phi, const double b, const double z0, const double c_bulk) const
+{
+    auto integrand = [this, mobility_phi](const double z)
+    {
+        return std::exp(total_free_energy(z)) / mobility_factor(mobility_phi, z);
+    };
+    const double psi = c_bulk * brush::integrators::integrate_over_z(brush, particle, integrand, 0.0, z0)/brush::integrators::integrate_over_z(brush, particle, integrand, 0.0, b);
+    return psi/std::exp(total_free_energy(z0));
 }

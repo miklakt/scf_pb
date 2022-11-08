@@ -12,6 +12,17 @@
 
 namespace py = pybind11;
 
+double conc_profile(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double l, const double z){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+    auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
+    double conc = particle_in_brush.particle_concentration(mobility_phi, brush.D()+l, z, 1.0);
+    return conc;
+}
+
 double D_z(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
@@ -124,7 +135,8 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("Pi", &Pi_, py::call_guard<py::gil_scoped_release>(), "Polymer osmotic profile (cxx)",  py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "z"_a);
     m.def("D", &D, py::call_guard<py::gil_scoped_release>(), "Polymer brush thickness (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a);
 
-    m.def("D_z", &D_z, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "z"_a);
+    m.def("D_z", &D_z, py::call_guard<py::gil_scoped_release>(), "Local diffusion coefficient (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "z"_a);
+    m.def("conc_profile", &conc_profile, py::call_guard<py::gil_scoped_release>(), "Concentration profile when perfect sink grafting surface (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "l"_a, "z"_a);
 
     m.def("free_energy", &free_energy, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
     m.def("free_energy_all", &free_energy_all, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);

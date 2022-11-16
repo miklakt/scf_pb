@@ -61,7 +61,52 @@ class Cylinder: public Particle
             return A;
         }
 };
-}
+
+
+class Sphere: public Particle{
+    private:
+    const double m_volume, m_surface;
+    const double A[2];
+    const double radius;
+    double chord_r2(const double z) const{
+        //double z_origin = 
+        return (radius*radius-(z-radius)*(z-radius));
+    }
+    public:
+    Sphere(const double r): Particle(2*r, 2*r), radius(r), m_volume(M_PI*r*r*r*4/3), m_surface(4*M_PI*r*r), A{0, 0}{}
+    
+    double volume_integrand(const double z) const override{
+        if ((z<0)||(z>height))
+        {
+            return 0;
+        }
+        return M_PI*chord_r2(z);
+    }
+
+    double surface_integrand(const double z) const override{
+        if ((z<0)||(z>height))
+        {
+            return 0;
+        }
+        return 2*M_PI*std::sqrt(chord_r2(z));
+    }
+
+    double volume() const override{
+            return m_volume;
+        }
+
+    double surface() const override{
+            return m_surface;
+        }
+
+    const double* const surface_edges() const override{
+            return A;
+        }
+ 
+};
+
+}//namespace particle
+
 
 namespace particle::integrators{
     template <typename ParticleType, typename FunctionToIntegrate>

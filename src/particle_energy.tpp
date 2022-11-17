@@ -188,3 +188,17 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     const double b = brush->D();
     return partition_coefficient_perfect_sink(mobility_phi, b, source_dist, c_bulk);
 }
+
+
+template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+template <typename MobilityFunc>
+double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient_no_energy(MobilityFunc mobility_phi) const
+{   
+    const double a = 0;
+    const double b = brush->D() - particle->height;
+    auto integrand = [this, mobility_phi](const double z)
+    {
+        return 1.0 / mobility_factor(mobility_phi, z);
+    };
+    return (b - a) / brush::integrators::integrate_over_z(brush, particle, integrand, a, b);
+}

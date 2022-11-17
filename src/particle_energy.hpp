@@ -100,6 +100,11 @@ public:
     double partition_coefficient_perfect_sink(const MobilityFunc mobility_phi, const double source_dist, const double c_bulk) const;
     template <typename MobilityFunc>
     double partition_coefficient_perfect_sink_open(const MobilityFunc mobility_phi, const double source_dist, const double c_bulk) const;
+
+
+    template <typename MobilityFunc>
+    double diffusion_coefficient_no_energy(const MobilityFunc mobility_phi) const;
+
 };
 
 // template implementation file

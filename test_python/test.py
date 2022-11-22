@@ -47,18 +47,26 @@ plt.plot(z, conc)
 # %%
 start_time = time.time()
 chi = np.linspace(0, 1, 50)
-chi_PC = [0, -0.5, -1.0, -1.5, -2.0, -3.0, -4.0]
+chi_PC = [0, -1.0,  -2.0, -4.0]
 PC_sink = scf_pb.PC_perfect_sink_v(
     N=1000, sigma = 0.02, 
     chi_PC = chi_PC, chi = np.linspace(0, 1, 50),
     a0=0.18, a1=-0.09, 
     particle_width=8, particle_height = 8, 
     k_smooth = 1,
-    l=50,
+    l=0,
+    progressbar = True
+    )
+PC_sink = scf_pb.PC_v(
+    N=1000, sigma = 0.02, 
+    chi_PC = chi_PC, chi = np.linspace(0, 1, 50),
+    a0=0.18, a1=-0.09, 
+    particle_width=8, particle_height = 8,
     progressbar = True
     )
 print("--- %s seconds ---" % (time.time() - start_time))
 #plt.plot(chi, PC)
+plt.yscale("log")
 [plt.plot(chi, PC_sink_, label = chi_PC_) for PC_sink_, chi_PC_ in zip(PC_sink, chi_PC)]
 plt.legend()
 # %%

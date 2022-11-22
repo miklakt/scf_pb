@@ -33,7 +33,7 @@ def get_free_energy_profile(N, sigma, chi, chi_PC, d):
 # %%
 %matplotlib ipympl
 from matplotlib.widgets import Slider, Button
-fig, ax = plt.subplots(nrows=2)
+fig, ax = plt.subplots(nrows=3, sharex=True)
 plt.subplots_adjust(bottom=0.3)
 
 chi_slider = Slider(
@@ -71,31 +71,23 @@ z, phi = get_phi_profile(N, sigma, chi_slider.val)
 #phi = scf_pb.phi_v(N=N, sigma=sigma, chi=chi_PC_slider.val, z=z)
 _, fe, fe_osm, fe_surf = get_free_energy_profile(N, sigma, chi_slider.val, chi_PC_slider.val, d_slider.val)
 mobility_factor = scf_pb.D_z_v(N=N, sigma=sigma, chi = chi_slider.val, chi_PC= chi_PC_slider.val, particle_width = d_slider.val, particle_height =  d_slider.val, k_smooth = 1, z=z, a0=a0, a1=a1)
+conc_profile = scf_pb.conc_profile_v(N=N, sigma=sigma, chi = chi_slider.val, chi_PC= chi_PC_slider.val, particle_width = d_slider.val, particle_height =  d_slider.val, k_smooth = 1, z=z, a0=a0, a1=a1, l=10)
 
 line, = ax[0].plot(z, phi, label = "$\phi$")
 line2, = ax[1].plot(z, fe, label = "$F_{tot}$")
 line21, = ax[1].plot(z, fe_osm, label = "$F_{osm}$")
 line22, = ax[1].plot(z, fe_surf, label = "$F_{surf}$")
+line31, = ax[2].plot(z, conc_profile, label = "$F_{surf}$")
 
 twinax = ax[0].twinx()
 twinax.set_ylim(0,1.1)
 line3, = twinax.plot(z, mobility_factor[::-1], color = "red", label = "mobility factor")
 ax[0].plot([],[], color = "red", label = "mobility factor")
 
-
-D_m = scf_pb.D_eff(N=N, sigma=sigma, chi=chi_slider.val, chi_PC=chi_PC_slider.val, a0=a0, a1=a1, particle_width= d_slider.val, particle_height= d_slider.val, k_smooth=4)
-t1=ax[1].text(0.99, 0.99, "$D_m =$"+f"{D_m:e}, " + "$log(D_m) =$"+f"{np.log(D_m):.2f}", transform = ax[1].transAxes, ha='right', va="top")
-t2=ax[1].text(0.99, 0.90, "$H =$"+f"{scf_pb.D(N=N, sigma=sigma, chi = chi_slider.val):.1f}", transform = ax[1].transAxes, ha='right', va="top")
-
-fe_integral = np.trapz(fe, z)
-t3=ax[1].text(0.99, 0.80, r"$\frac{1}{H}\int_0^H F(z) dz =$"+f"{fe_integral:.1f}", transform = ax[1].transAxes, ha='right', va="top")
-
-exp_fe_integral = np.log(np.trapz(np.exp(fe), z))
-t4=ax[1].text(0.99, 0.70, r"$log(\frac{1}{H}\int_0^H exp(F(z)) dz) =$"+f"{exp_fe_integral:.1f}", transform = ax[1].transAxes, ha='right', va="top")
-
-
 phi_max = 0
 z_max = 0
+
+ax[2].set_ylim(0,2)
 
 def update(val):
     global phi_max
@@ -103,11 +95,9 @@ def update(val):
     chi_PS = chi_slider.val
 
     z, phi = get_phi_profile(N, sigma, chi_slider.val)
-    #z = np.arange(0,200, 0.5)
-    #phi = scf_pb.phi_v(N=N, sigma=sigma, chi=chi_PC_slider.val, z=z)
     _, fe, fe_osm, fe_surf = get_free_energy_profile(N, sigma, chi_slider.val, chi_PC_slider.val, d_slider.val)
-    #mobility_factor = scf_pb.mobility_v(phi, d_slider.val, k_smooth=4)
     mobility_factor = scf_pb.D_z_v(N=N, sigma=sigma, chi = chi_slider.val, chi_PC= chi_PC_slider.val, particle_width = d_slider.val, particle_height =  d_slider.val, k_smooth = 1, z=z, a0=a0, a1=a1)
+    conc_profile = scf_pb.conc_profile_v(N=N, sigma=sigma, chi = chi_slider.val, chi_PC= chi_PC_slider.val, particle_width = d_slider.val, particle_height =  d_slider.val, k_smooth = 1, z=z, a0=a0, a1=a1, l=10)
     phi_max = max(phi_max, max(phi))
 
 
@@ -128,20 +118,16 @@ def update(val):
     line3.set_xdata(z)
     line3.set_ydata(mobility_factor)
 
+    line31.set_xdata(z)
+    line31.set_ydata(conc_profile)
+
     ax[0].set_xlim(0, z_max)
     ax[0].set_ylim(0, phi_max)
     ax[1].set_xlim(0, z_max)
     ax[1].set_ylim(np.min([fe, fe_osm, fe_surf]), np.max([fe, fe_osm, fe_surf]))
 
-    D_m = scf_pb.D_eff(N=N, sigma=sigma, chi=chi_slider.val, chi_PC=chi_PC_slider.val, a0=a0, a1=a1, particle_width= d_slider.val, particle_height= d_slider.val, k_smooth=4)
-    t1.set_text("$D_m =$"+f"{D_m :e}, " + "$log(D_m) =$"+f"{np.log(D_m):.2f}")
-    t2.set_text("$H =$"+f"{scf_pb.D(N=N, sigma=sigma, chi = chi_PS) :.2f}")
+    ax[2].set_ylim(0,2)
 
-    fe_integral = np.trapz(fe, z)/max(z)
-    t3.set_text(r"$\frac{1}{H}\int_0^H F(z) dz =$"+f"{fe_integral:.1f}")
-
-    exp_fe_integral = np.log(np.trapz(np.exp(fe), z))
-    t4.set_text(r"$log(\frac{1}{H}\int_0^H exp(F(z)) dz) =$"+f"{exp_fe_integral:.1f}")
 
     fig.canvas.draw_idle()
 

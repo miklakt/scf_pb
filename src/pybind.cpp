@@ -57,6 +57,17 @@ double D_eff(const double N, const double sigma, const double chi, const double 
     return d_eff;
 }
 
+double D_eff_uncorrected(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Sphere particle(particle_height/2);
+    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+    //auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
+    double d_eff = particle_in_brush.diffusion_coefficient();
+    return d_eff;
+}
+
 double D_eff_open(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
@@ -65,6 +76,17 @@ double D_eff_open(const double N, const double sigma, const double chi, const do
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double d_eff = particle_in_brush.diffusion_coefficient_open(mobility_phi);
+    return d_eff;
+}
+
+double D_eff_uncorrected_open(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Sphere particle(particle_height/2);
+    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+    //auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
+    double d_eff = particle_in_brush.diffusion_coefficient_open();
     return d_eff;
 }
 
@@ -205,6 +227,10 @@ PYBIND11_MODULE(_scf_pb, m){
     //m.def("D_eff_uncorrected", &D_eff_uncorrected, py::call_guard<py::gil_scoped_release>(), "Uncorrected effective diffusion coefficient (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
     m.def("D_eff", &D_eff, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
     m.def("D_eff_open", &D_eff_open, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
+
+    m.def("D_eff_uncorrected", &D_eff_uncorrected, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
+    m.def("D_eff_uncorrected_open", &D_eff_uncorrected_open, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
+
     m.def("D_eff_no_energy", &D_eff_no_energy, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)",  "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
     m.def("D_eff_external", &D_eff_external, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", py::kw_only{},  "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "a"_a, "b"_a);
 

@@ -4,6 +4,8 @@
 
 bool test_volume_integral(const Particle* particle){
     auto volume_integrated = INTEGRATE_FUNC([particle](const double z){return particle->volume_integrand(z);}, 0, particle->height);
+    std::cout << "Height:" << particle->height <<"\n";
+    std::cout << "Width:" << particle->width <<"\n";
     std::cout << "Integrated volume:" << volume_integrated <<"\n";
     std::cout << "Volume" << particle->volume() <<"\n";
     return ((volume_integrated-particle->volume())<1e-6);

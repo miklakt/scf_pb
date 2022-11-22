@@ -98,13 +98,14 @@ T mu_inv(T const &mu, T const &chi){
         return 1-std::exp(-mu);
     }
     double lambert_arg = -2*chi*std::exp(-2*chi-mu);
-    if (lambert_arg <= -0.367879){return 0.0;} //near singularity point
+    //if (lambert_arg <= -0.367879){return 0.0;} //near singularity point
     return 1+lambert_w0(lambert_arg)/(2*chi);
 }
 
 //Polymer density at given z
 template <class T>
 T phi_z(T const &chi, T const &phi_D, T const &d, T const &z, T const &kappa){
+    if (z<0){throw std::invalid_argument("Expected argument z>0");}
     if (z>d){return T(0);}
     T mu_D = mu_phi(phi_D, chi);
     T mu = mu_z(mu_D, d, z, kappa);

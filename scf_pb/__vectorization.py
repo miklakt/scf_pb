@@ -4,7 +4,39 @@ import itertools
 import numpy as np
 import os
 
+import scf_pb
+
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+def eval_expressions_in_arguments(kwargs : dict):
+    #make it lazy
+    computables = {
+        "H" : (lambda : scf_pb.D(**{ k:kwargs[k] for k in ["N", "sigma", "chi"]})),
+        "D" : (lambda : scf_pb.D(**{ k:kwargs[k] for k in ["N", "sigma", "chi"]})),
+        "phi" : (lambda : scf_pb.phi(**{ k:kwargs[k] for k in ["N", "sigma", "chi", "z"]})),
+        }
+
+    #add constants to locals
+    constants = {k:v for k, v in kwargs.items() if not isinstance(v, str)}
+
+    #one variable substitutuions
+    singles_substitutions = {k:constants[v] for k, v in kwargs.items() if v in constants.keys()}
+    constants.update(singles_substitutions)
+
+    #the rest is expressions
+    expressions = {k:v for k, v in kwargs.items() if ((isinstance(v, str)) and (v not in constants.keys()))}
+    if expressions:
+        computed = {}
+        for k, expr in expressions.items():
+            code = compile(expr, "<string>", "eval")
+            for name in code.co_names:
+                if name in computables.keys(): computed[name] = computables[name]()
+            constants[k] = eval(code, {**constants, **computed})
+
+
+    return constants
+
+
 
 def vectorize() -> Callable:
     def decorator(func : Callable) -> Callable:
@@ -31,8 +63,7 @@ def vectorize() -> Callable:
                 for it in iteration:
                     iteration_args = {k : v for k, v  in zip(vector_args, it)}
                     iteration_args.update(scalar_args)
-                    str_args_substitute = {k:iteration_args[v] for k, v in iteration_args.items() if isinstance(v, str)}
-                    iteration_args.update(str_args_substitute)
+                    iteration_args = eval_expressions_in_arguments(iteration_args)
                     futures.append(pool.submit(func, **iteration_args))
 
                 if progressbar:

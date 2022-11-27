@@ -48,7 +48,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     return (b - a) / brush::integrators::integrate_over_z(brush, particle, integrand, a, b);
 }
 
-template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+/* template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient() const
 {
     const double a = 0.0;
@@ -70,7 +70,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     const double a = 0.0;
     const double b = std::min(R, brush->D());
     return diffusion_coefficient(a, b);
-}
+} */
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
@@ -88,7 +88,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 
 
 
-template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+/* template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::diffusion_coefficient(const MobilityFunc mobility_phi) const
 {
@@ -113,7 +113,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     const double a = 0;
     const double b = std::min(R, brush->D());
     return diffusion_coefficient(mobility_phi, a, b);
-}
+} */
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient(const double a, const double b) const
@@ -123,7 +123,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     return brush::integrators::integrate_over_z(brush, particle, integrand, a, b)/(b - a);
 }
 
-template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
+/* template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::partition_coefficient() const
 {
     const double a = 0;
@@ -145,7 +145,7 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     const double a = 0;
     const double b = std::min(R, brush->D());
     return partition_coefficient(a, b);
-}
+} */
 
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>

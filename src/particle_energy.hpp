@@ -73,23 +73,23 @@ public:
     //double particle_concentration(const double z0);
 
     double partition_coefficient(const double a, const double b) const;
-    double partition_coefficient() const;
-    double partition_coefficient_open() const;
-    double partition_coefficient_slit(const double R) const;
+    //double partition_coefficient() const;
+    //double partition_coefficient_open() const;
+    //double partition_coefficient_slit(const double R) const;
 
     double diffusion_coefficient(const double a, const double b) const;
-    double diffusion_coefficient() const;
-    double diffusion_coefficient_open() const;
-    double diffusion_coefficient_slit(const double R) const;
+    //double diffusion_coefficient() const;
+    //double diffusion_coefficient_open() const;
+    //double diffusion_coefficient_slit(const double R) const;
 
     template <typename MobilityFunc>
     double diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b) const;
-    template <typename MobilityFunc>
-    double diffusion_coefficient(const MobilityFunc mobility_phi) const;
-    template <typename MobilityFunc>
-    double diffusion_coefficient_open(const MobilityFunc mobility_phi) const;
-    template <typename MobilityFunc>
-    double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R) const;
+    //template <typename MobilityFunc>
+    //double diffusion_coefficient(const MobilityFunc mobility_phi) const;
+    //template <typename MobilityFunc>
+    //double diffusion_coefficient_open(const MobilityFunc mobility_phi) const;
+    //template <typename MobilityFunc>
+    //double diffusion_coefficient_slit(const MobilityFunc mobility_phi, const double R) const;
 
     template <typename MobilityFunc>
     double particle_concentration(const MobilityFunc mobility_phi, const double l, const double z0, const double c_bulk) const;

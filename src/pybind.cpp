@@ -85,7 +85,7 @@ double PC(const double a, const double b, const double N, const double sigma, co
     particle::Sphere particle(particle_height/2);
     auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
-    double pc = particle_in_brush.partition_coefficient();
+    double pc = particle_in_brush.partition_coefficient(a, b);
     return pc;
 }
 

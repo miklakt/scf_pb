@@ -88,7 +88,8 @@ class Sphere: public Particle{
         {
             return 0;
         }
-        return 2*M_PI*std::sqrt(chord_r2(z));
+        //return 2*M_PI*std::sqrt(chord_r2(z));
+        return 2*M_PI*radius;
     }
 
     double volume() const override{

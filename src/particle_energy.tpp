@@ -20,12 +20,13 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
     }
 
     const double right_limit = std::min(particle->height, brush->D()-z0);
+    //const double right_limit = particle->height;
 
     auto integrand = [this, &z0](const double arg)
     {
         const double phi = brush->phi_z(arg + z0);
         const double gamma = this->gamma_phi(phi);
-        return phi * gamma;
+        return gamma; //bugfix return phi*gamma;!!!
     };
 
     return particle::integrators::integrate_over_surface(particle, integrand, right_limit);

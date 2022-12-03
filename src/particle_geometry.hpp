@@ -32,7 +32,7 @@ class Cylinder: public Particle
         const double A[2];
     public:
         Cylinder(const double h, const double w)
-        : Particle(w, h), m_volume(M_PI*w*w/4*h), m_surface(M_PI*(w*h+w*w/2)), A{M_PI*w*w/4, M_PI*w*w/4}{}
+        : Particle(w, h), m_volume(M_PI*w*w*h/4), m_surface(M_PI*w*h +M_PI*w*w/2), A{M_PI*w*w/4, M_PI*w*w/4}{}
 
         double volume_integrand(const double z) const override{
             if ((z<0)||(z>height))
@@ -46,7 +46,7 @@ class Cylinder: public Particle
             if ((z<0)||(z>height)){
                 return 0;
             }
-            return M_PI*width*2;
+            return M_PI*width;
         }
 
         double volume() const override{
@@ -69,7 +69,6 @@ class Sphere: public Particle{
     const double A[2];
     const double radius;
     double chord_r2(const double z) const{
-        //double z_origin = 
         return (radius*radius-(z-radius)*(z-radius));
     }
     public:
@@ -88,7 +87,6 @@ class Sphere: public Particle{
         {
             return 0;
         }
-        //return 2*M_PI*std::sqrt(chord_r2(z));
         return 2*M_PI*radius;
     }
 
@@ -106,7 +104,7 @@ class Sphere: public Particle{
  
 };
 
-}//namespace particle
+}
 
 
 namespace particle::integrators{
@@ -128,7 +126,8 @@ namespace particle::integrators{
 
     template <typename ParticleType, typename FunctionToIntegrate>
     double integrate_over_volume(const ParticleType *particle, const FunctionToIntegrate func)
-    {
+    {   
+        //std::cout <<"integrate_over_volume(const ParticleType *particle, const FunctionToIntegrate func)\n";
         return integrate_over_volume(particle, func, 0.0, particle->height);
     }
 
@@ -156,7 +155,7 @@ namespace particle::integrators{
 
     
     //simple integration over cylinder
-    template <typename FunctionToIntegrate>
+    /* template <typename FunctionToIntegrate>
     double integrate_over_volume(const particle::Cylinder *particle, const FunctionToIntegrate func, const double a, const double b)
     {   
         if (a==b){return 0;}
@@ -176,6 +175,6 @@ namespace particle::integrators{
         auto A = particle->surface_edges();
         double caps = (a==0.0)*A[0]*func(a)+(b==particle->height)*A[1]*func(b);
         return boost::math::quadrature::gauss_kronrod<double, 31>::integrate(integrand, a, b)*M_PI*particle->width*2 + caps;
-    }
+    } */
     
 }//namespace integrators

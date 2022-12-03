@@ -13,17 +13,20 @@ namespace surface_interaction_coefficient
 {
     const double chi_crit = 6.0 * std::log(5.0 / 6.0);
 
-    double gamma_2poly_model(const double a0, const double a1, const double chi, const double chi_PC, const double phi)
-    {
-        double chi_ads = chi_PC - chi * (1 - phi);
-        double psi = a0 * phi + a1 * phi * phi;
-        double gamma = (chi_ads - chi_crit) * psi;
-        return gamma;
+    auto gamma_2poly_model(const double a0, const double a1, const double chi, const double chi_PC)
+    {   
+        auto gama_phi = [=](const double phi){
+            double chi_ads = chi_PC - chi * (1 - phi);
+            double psi = a0 * phi + a1 * phi * phi;
+            double gamma = (chi_ads - chi_crit) * psi;
+            return gamma;
+        };
+        return gama_phi;
     }
 
-    auto gamma_phi = [](const double a0, const double a1, const double chi, const double chi_PC)
+    /* auto gamma_phi = [](const double a0, const double a1, const double chi, const double chi_PC)
     { return [=](const double phi)
-      { return gamma_2poly_model(a0, a1, chi, chi_PC, phi); }; };
+      { return gamma_2poly_model(a0, a1, chi, chi_PC, phi); }; }; */
 } // namespace surface_interaction_coefficient
 
 namespace particle_mobility

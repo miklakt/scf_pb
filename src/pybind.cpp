@@ -15,8 +15,8 @@ namespace py = pybind11;
 double conc_profile_fixed_source(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double source_dist, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double conc = particle_in_brush.particle_concentration(mobility_phi, source_dist, z, 1.0);
@@ -26,8 +26,8 @@ double conc_profile_fixed_source(const double N, const double sigma, const doubl
 double conc_profile(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double l, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double source_dist = brush.D()+l;
@@ -38,8 +38,8 @@ double conc_profile(const double N, const double sigma, const double chi, const 
 double D_z(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double mobility_factor = particle_in_brush.mobility_factor(mobility_phi, z);
@@ -49,8 +49,8 @@ double D_z(const double N, const double sigma, const double chi, const double ch
 double D_eff(const double a, const double b, const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double d_eff = particle_in_brush.diffusion_coefficient(mobility_phi, a, b);
@@ -60,8 +60,8 @@ double D_eff(const double a, const double b, const double N, const double sigma,
 double D_eff_uncorrected(const double a, const double b, const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     double d_eff = particle_in_brush.diffusion_coefficient(a, b);
     return d_eff;
@@ -70,8 +70,8 @@ double D_eff_uncorrected(const double a, const double b, const double N, const d
 double D_eff_no_energy(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double d_eff = particle_in_brush.diffusion_coefficient_no_energy(mobility_phi);
@@ -82,8 +82,8 @@ double D_eff_no_energy(const double N, const double sigma, const double chi, con
 double PC(const double a, const double b, const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     double pc = particle_in_brush.partition_coefficient(a, b);
     return pc;
@@ -92,8 +92,8 @@ double PC(const double a, const double b, const double N, const double sigma, co
 double PC_perfect_sink_fixed_source(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double source_dist){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double pc = particle_in_brush.partition_coefficient_perfect_sink(mobility_phi,source_dist, 1.0);
@@ -103,8 +103,8 @@ double PC_perfect_sink_fixed_source(const double N, const double sigma, const do
 double PC_perfect_sink(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double l){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double source_dist = brush.D()+l;
@@ -116,8 +116,8 @@ double PC_perfect_sink(const double N, const double sigma, const double chi, con
 
 double D_eff_external(const std::vector<double> phi, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double a, const double b){
     BrushProfileExternal brush(phi, chi);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
     double d_eff = particle_in_brush.diffusion_coefficient(mobility_phi, a, b);
@@ -127,8 +127,8 @@ double D_eff_external(const std::vector<double> phi, const double chi, const dou
 double free_energy(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     double fe = particle_in_brush.total_free_energy(z);
     return fe;
@@ -137,8 +137,8 @@ double free_energy(const double N, const double sigma, const double chi, const d
 auto free_energy_all(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double z){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     double fe_osm = particle_in_brush.osmotic_free_energy(z);
     double fe_sur = particle_in_brush.surface_free_energy(z);
@@ -148,8 +148,8 @@ auto free_energy_all(const double N, const double sigma, const double chi, const
 
 double free_energy_external(const std::vector<double> phi, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double z){
     BrushProfileExternal brush(phi, chi);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_phi(a0, a1, chi, chi_PC);
+    particle::Cylinder particle(particle_height, particle_width);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
     ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
     double fe = particle_in_brush.total_free_energy(z);
     return fe;

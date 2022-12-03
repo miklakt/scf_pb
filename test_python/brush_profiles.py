@@ -15,8 +15,8 @@ def Pi_py(phi, chi):
         Pi=0
     return Pi
 #%%
-N=1000
-sigma = 0.02
+N=2000
+sigma = 0.08
 chi = np.arange(0, 1.1, 0.1)
 D = scf_pb.D_v(N=N, sigma=sigma, chi=chi)+100
 z = [np.linspace(0, D_) for D_ in D]
@@ -34,7 +34,7 @@ plt.legend(title= "$\chi$")
 plt.xlabel("z")
 plt.ylabel("$\phi$")
 #%%
-phi_D =[scf_pb.phi(N=N, sigma=sigma, chi=chi_, z = D_) for chi_, D_ in zip(chi, D)]
+phi_D =scf_pb.phi_v(N=N, sigma=sigma, chi=chi, z = "H")
 plt.plot(chi, phi_D)
 plt.legend(title= "$\chi$")
 plt.xlabel("\chi")

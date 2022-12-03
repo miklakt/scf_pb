@@ -10,12 +10,13 @@ import time
 #16 workers 9.385826349258423 seconds
 # access to cache 0.029059171676635742 seconds
 start_time = time.time()
-D_eff = scf_pb.PC_v(
-    N=1000, sigma = 0.02, 
-    chi = np.linspace(0, 1, 50), chi_PC = np.linspace(0, 1, 50), 
+D_eff = scf_pb.D_eff_v(
+    N=2000, sigma = 0.08, 
+    chi = np.linspace(0, 1, 10), chi_PC = -1, 
     a0=0.18, a1=-0.09, 
-    particle_width=4, particle_height = 4, 
-    #k_smooth = 1, 
+    particle_width=np.geomspace(1,10), particle_height = "particle_width", 
+    k_smooth = 1, 
+    a="H", b = "H+1",
     progressbar = True
     )
 print("--- %s seconds ---" % (time.time() - start_time))

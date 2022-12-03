@@ -20,7 +20,7 @@ bool test_volume_integral(const Particle* particle){
 
 int main(int argc, char* argv[]){
     const double r = 20;
-    particle::Cylinder particle{r, r};
+    particle::Sphere particle{r};
     test_volume_integral(&particle);
 
     /* std::cout << "_______________________" <<"\n";
@@ -28,8 +28,8 @@ int main(int argc, char* argv[]){
     test_volume_integral(&particle2); */
 
     
-    auto volume = particle::integrators::integrate_over_volume(&particle, [f = 1.0f](const double z){return f;});
+    auto volume = particle::integrators::integrate_over_volume(&particle, [f = 2.0f](const double z){return f;});
     std::cout << "Integrated volume (integrator):" << volume <<"\n";
-    auto surface = particle::integrators::integrate_over_surface(&particle, [f = 1.0f](const double z){return f;});
+    auto surface = particle::integrators::integrate_over_surface(&particle, [f = 2.0f](const double z){return f;});
     std::cout << "Integrated surface (integrator):" << surface <<"\n";
 }

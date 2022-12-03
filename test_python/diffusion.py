@@ -8,7 +8,7 @@ r=5
 d = r*2
 a0 = 0.18
 a1 = -0.09
-chi = 0
+chi = 1
 sigma = 0.08
 N = 2000
 
@@ -23,7 +23,7 @@ Pi2 = -np.log(1-phi) - phi - chi*phi**2
 plt.plot(z, Pi)
 plt.plot(z, Pi2)
 #%%
-chi_PC=-1.1
+chi_PC=-3
 chi_ads = chi_PC - chi*(1-phi)
 chi_crit = 6*np.log(5/6)
 gamma = (chi_ads-chi_crit)*(a0*phi+a1*phi**2)
@@ -39,4 +39,40 @@ fe = scf_pb.free_energy_v(
 plt.plot(z, fe, label ="fe")
 plt.plot(z, fe_approx,  label ="approx")
 plt.legend()
+# %%
+d=np.linspace(1,10)
+fe = scf_pb.free_energy_v(
+    N=N, sigma=sigma, chi=chi,
+    chi_PC = chi_PC,
+    a0=a0, a1=a1, 
+    particle_width = d, particle_height = "particle_width", 
+    z = "H"
+    )
+plt.plot(d, fe)
+# %%
+d=np.linspace(1,10)
+D_eff = scf_pb.D_eff_v(
+    N=N, sigma=sigma, chi=chi,
+    chi_PC = chi_PC,
+    a0=a0, a1=a1, 
+    particle_width = d, particle_height = "particle_width", 
+    k_smooth = 1,
+    a=0, b=["H"],
+    progressbar=True
+    )
+plt.plot(d, D_eff)
+# %%
+d=np.linspace(1,10)
+D_eff = scf_pb.D_eff_v(
+    N=N, sigma=sigma, chi=chi,
+    chi_PC = chi_PC,
+    a0=a0, a1=a1, 
+    particle_width = d, particle_height = "particle_width", 
+    k_smooth = 1,
+    a="H", b="H+10",
+    progressbar=True
+    )
+plt.plot(d, D_eff)
+plt.xscale("log")
+plt.yscale("log")
 # %%

@@ -32,7 +32,7 @@ class Cylinder: public Particle
         const double A[2];
     public:
         Cylinder(const double h, const double w)
-        : Particle(w, h), m_volume(M_PI*w*w*h/4), m_surface(M_PI*w*h +M_PI*w*w/2), A{M_PI*w*w/4, M_PI*w*w/4}{}
+        : Particle(w, h), m_volume(M_PI*w*w*h/4.0), m_surface(M_PI*w*h +M_PI*w*w/2.0), A{M_PI*w*w/4.0, M_PI*w*w/4.0}{}
 
         double volume_integrand(const double z) const override{
             if ((z<0)||(z>height))
@@ -72,7 +72,7 @@ class Sphere: public Particle{
         return (radius*radius-(z-radius)*(z-radius));
     }
     public:
-    Sphere(const double r): Particle(2*r, 2*r), radius(r), m_volume(M_PI*r*r*r*4/3), m_surface(4*M_PI*r*r), A{0, 0}{}
+    Sphere(const double r): Particle(2*r, 2*r), radius(r), m_volume(M_PI*r*r*r*4.0/3.0), m_surface(4.0*M_PI*r*r), A{0.0, 0.0}{}
     
     double volume_integrand(const double z) const override{
         if ((z<0)||(z>height))

@@ -89,30 +89,6 @@ double PC(const double a, const double b, const double N, const double sigma, co
     return pc;
 }
 
-double PC_perfect_sink_fixed_source(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double source_dist){
-    double kappa = topology::kappa(N);
-    BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
-    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
-    auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
-    double pc = particle_in_brush.partition_coefficient_perfect_sink(mobility_phi,source_dist, 1.0);
-    return pc;
-}
-
-double PC_perfect_sink(const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double l){
-    double kappa = topology::kappa(N);
-    BrushProfilePlanar brush(chi, N, sigma, kappa);
-    particle::Sphere particle(particle_height/2);
-    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
-    ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
-    auto mobility_phi = particle_mobility::mobility_phi(particle_width, k_smooth);
-    double source_dist = brush.D()+l;
-    double pc = particle_in_brush.partition_coefficient_perfect_sink(mobility_phi,source_dist, 1.0);
-    return pc;
-}
-
-
 
 double D_eff_external(const std::vector<double> phi, const double chi, const double chi_PC, const double a0, const double a1, const double particle_width, const double particle_height, const double k_smooth, const double a, const double b){
     BrushProfileExternal brush(phi, chi);
@@ -199,8 +175,6 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("D_eff_external", &D_eff_external, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", py::kw_only{},  "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "a"_a, "b"_a);
 
     m.def("PC", &PC, py::call_guard<py::gil_scoped_release>(), "Partition coefficient of particles in polymer brush and a semi-infinite solution (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
-    m.def("PC_perfect_sink_fixed_source", &PC_perfect_sink_fixed_source, py::call_guard<py::gil_scoped_release>(), "Partition coefficient of particles in polymer brush and a semi-infinite solution when perfect sink grafting surface (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "source_dist"_a);
-    m.def("PC_perfect_sink", &PC_perfect_sink, py::call_guard<py::gil_scoped_release>(), "Partition coefficient of particles in polymer brush and a semi-infinite solution when perfect sink grafting surface (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a, "l"_a);
 
     m.def("mobility_factor", &particle_mobility::mobility_factor, py::call_guard<py::gil_scoped_release>(), "Polymer network mobility factor", py::kw_only{}, "phi"_a, "d"_a, "k_smooth"_a);
 }

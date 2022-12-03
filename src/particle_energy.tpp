@@ -6,9 +6,15 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
         return 0.0;
     }
 
-    const double right_limit = std::min(particle->height, brush->D()-z0);
+    //const double right_limit = std::min(particle->height, brush->D()-z0);
+    const double right_limit = particle->height;
 
-    return particle::integrators::integrate_over_volume(particle, [brush=brush, z0](const double z){return brush->Pi_z(z0 + z);}, right_limit);
+    auto integrand = [this, &z0](const double arg)
+    {
+            return brush->Pi_z(arg+z0);
+    };
+
+    return particle::integrators::integrate_over_volume(particle, integrand, right_limit);
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>

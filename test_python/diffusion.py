@@ -52,15 +52,15 @@ plt.plot(d, fe)
 # %%
 d=np.linspace(1,10)
 D_eff = scf_pb.D_eff_v(
-    N=N, sigma=sigma, chi=chi,
+    N=N, sigma=sigma, chi=[0, 0.5, 1],
     chi_PC = chi_PC,
     a0=a0, a1=a1, 
     particle_width = d, particle_height = "particle_width", 
     k_smooth = 1,
-    a=0, b=["H"],
+    a=0, b="H",
     progressbar=True
     )
-plt.plot(d, D_eff)
+[plt.plot(d, D_eff_) for D_eff_ in D_eff]
 # %%
 d=np.linspace(1,10)
 D_eff = scf_pb.D_eff_v(
@@ -75,4 +75,19 @@ D_eff = scf_pb.D_eff_v(
 plt.plot(d, D_eff)
 plt.xscale("log")
 plt.yscale("log")
+# %%
+d=4
+H = scf_pb.D(N=N, sigma=sigma, chi = 0.5)
+z=np.arange(H+250)
+conc = scf_pb.conc_profile_v(
+    N=N, sigma=sigma, chi= 0.5,
+    chi_PC = -1,
+    a0=a0, a1=a1, 
+    particle_width = d, particle_height = "particle_width", 
+    k_smooth = 1,
+    progressbar=True,
+    l=200,
+    z=z
+    )
+plt.plot(z, conc)
 # %%

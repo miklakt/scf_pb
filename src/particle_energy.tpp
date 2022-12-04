@@ -108,10 +108,8 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::
-    diffusion_coefficient_no_energy(MobilityFunc mobility_phi) const
+    diffusion_coefficient_no_energy(MobilityFunc mobility_phi, const double a, const double b) const
 {
-    const double a = 0;
-    const double b = brush->D() - particle->height;
     auto integrand = [this, mobility_phi](const double z)
     {
         return 1.0 / mobility_factor(mobility_phi, z);

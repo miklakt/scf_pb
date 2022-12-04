@@ -91,24 +91,24 @@ double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractio
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::
-particle_concentration(const MobilityFunc mobility_phi, const double source_dist, const double z0, const double c_bulk) const
+    particle_concentration(const MobilityFunc mobility_phi, const double source_dist, const double z0) const
 {
     if (z0 >= source_dist)
     {
-        return c_bulk;
+        return 1.0;
     }
     auto integrand = [this, mobility_phi](const double z)
     {
         return std::exp(total_free_energy(z)) / mobility_factor(mobility_phi, z);
     };
-    const double psi = c_bulk * INTEGRATE_FUNC(integrand, 0, source_dist);
+    const double psi = INTEGRATE_FUNC(integrand, 0.0, z0)/INTEGRATE_FUNC(integrand, 0.0, source_dist);
     return psi / std::exp(total_free_energy(z0));
 }
 
 template <typename ParticleType, typename BrushType, typename SurfaceInteractionModel>
 template <typename MobilityFunc>
 double ParticleBrushInteractionEnergy<ParticleType, BrushType, SurfaceInteractionModel>::
-diffusion_coefficient_no_energy(MobilityFunc mobility_phi) const
+    diffusion_coefficient_no_energy(MobilityFunc mobility_phi) const
 {
     const double a = 0;
     const double b = brush->D() - particle->height;

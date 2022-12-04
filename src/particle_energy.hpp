@@ -79,7 +79,7 @@ public:
     double diffusion_coefficient(const MobilityFunc mobility_phi, const double a, const double b) const;
 
     template <typename MobilityFunc>
-    double particle_concentration(const MobilityFunc mobility_phi, const double l, const double z0, const double c_bulk) const;
+    double particle_concentration(const MobilityFunc mobility_phi, const double l, const double z0) const;
 
     template <typename MobilityFunc>
     double diffusion_coefficient_no_energy(const MobilityFunc mobility_phi) const;

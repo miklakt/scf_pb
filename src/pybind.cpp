@@ -127,6 +127,31 @@ double D(const double N, const double sigma, const double chi){
     return brush.D();
 }
 
+//Temporary here
+double d_critical(const double a, const double b, const double N, const double sigma, const double chi, const double chi_PC, const double a0, const double a1, const double k_smooth, const double min, const double max){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
+    auto fsolve = [=](const double particle_height){
+        particle::Sphere particle(particle_height/2);
+        ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+        auto mobility_phi = particle_mobility::mobility_phi(particle_height, k_smooth);
+        double d_eff = particle_in_brush.diffusion_coefficient(mobility_phi, a, b);
+        return std::log(d_eff)-1.0;
+    };
+
+    const double maxit = 50;
+    std::uintmax_t it = maxit;
+    int digits = std::numeric_limits<double>::digits;
+    int get_digits = digits - 3;
+    eps_tolerance<double> tol(get_digits);
+
+
+    std::pair<double, double> r = toms748_solve(fsolve, min, max, tol, it);
+
+    return r.first + (r.second - r.first)/2;
+}
+
 using namespace pybind11::literals;
 PYBIND11_MODULE(_scf_pb, m){
 
@@ -153,4 +178,8 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("PC", &PC, py::call_guard<py::gil_scoped_release>(), "Partition coefficient of particles in polymer brush and a semi-infinite solution (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
 
     m.def("mobility_factor", &particle_mobility::mobility_factor, py::call_guard<py::gil_scoped_release>(), "Polymer network mobility factor", py::kw_only{}, "phi"_a, "d"_a, "k_smooth"_a);
+
+
+    m.def("d_critical", &d_critical, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "k_smooth"_a, "dmin"_a, "dmax"_a);
+    
 }

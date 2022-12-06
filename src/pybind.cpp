@@ -152,6 +152,35 @@ double d_critical(const double a, const double b, const double N, const double s
     return r.first + (r.second - r.first)/2;
 }
 
+double chi_PC_critical(const double a, const double b, const double N, const double sigma, const double chi, const double a0, const double a1, const double d, const double k_smooth, const double min, const double max){
+    double kappa = topology::kappa(N);
+    BrushProfilePlanar brush(chi, N, sigma, kappa);
+    particle::Sphere particle(d/2);
+    auto fsolve = [=](const double chi_PC){
+        auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
+        ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
+        auto mobility_phi = particle_mobility::mobility_phi(d, k_smooth);
+        double d_eff = particle_in_brush.diffusion_coefficient(mobility_phi, a, b);
+        return std::log(d_eff)-1.0;
+    };
+
+    const double maxit = 50;
+    std::uintmax_t it = maxit;
+    int digits = std::numeric_limits<double>::digits;
+    int get_digits = digits - 3;
+    eps_tolerance<double> tol(get_digits);
+
+    const double chi_crit = 6.0 * std::log(5.0 / 6.0);
+    const double D = brush->D();
+    const double phi_av = N*sigma/D;
+    const double chi_PC_max = chi_crit+chi_PS*(1-phi_av);
+
+
+    std::pair<double, double> r = toms748_solve(fsolve, min, max, tol, it);
+
+    return r.first + (r.second - r.first)/2;
+}
+
 using namespace pybind11::literals;
 PYBIND11_MODULE(_scf_pb, m){
 
@@ -168,9 +197,9 @@ PYBIND11_MODULE(_scf_pb, m){
     m.def("free_energy_all", &free_energy_all, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "N"_a, "sigma"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
     m.def("free_energy_external", &free_energy_external, py::call_guard<py::gil_scoped_release>(), "Insertion free energy profile (cxx)", py::kw_only{}, "phi"_a, "chi"_a, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "z"_a);
 
-    
+
     m.def("D_eff", &D_eff, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
-    
+
     m.def("D_eff_uncorrected", &D_eff_uncorrected, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a);
 
     m.def("D_eff_no_energy", &D_eff_no_energy, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "particle_width"_a, "particle_height"_a, "k_smooth"_a);
@@ -181,5 +210,6 @@ PYBIND11_MODULE(_scf_pb, m){
 
 
     m.def("d_critical", &d_critical, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "k_smooth"_a, "dmin"_a, "dmax"_a);
-    
+    m.def("chi_PC_critical", &chi_PC_critical, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "a0"_a, "a1"_a, "d"_a, "k_smooth"_a, "chi_PC_min"_a, "chi_PC_max"_a);
+
 }

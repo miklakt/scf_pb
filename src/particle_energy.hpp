@@ -29,7 +29,10 @@ namespace surface_interaction_coefficient
 namespace particle_mobility
 {
     double mobility_factor(const double phi, const double d, const double k)
-    {
+    {   
+        if (k==0){
+            return 1;
+        }
         if (phi == 0)
         {
             return 1;

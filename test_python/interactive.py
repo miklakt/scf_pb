@@ -6,8 +6,8 @@ import numpy as np
 import matplotlib
 #matplotlib.use('TkAgg')
 #%%
-N =1000
-sigma = 0.02
+N =2000
+sigma = 0.08
 a0 = 0.18
 a1=-0.09
 def get_phi_profile(N, sigma, chi):
@@ -43,7 +43,7 @@ chi_slider = Slider(
     label="$\chi_{PS}$",
     valmin=0,
     valmax=1,
-    valinit=0,
+    valinit=0.5,
 )
 
 chi_PC_slider = Slider(
@@ -52,7 +52,7 @@ chi_PC_slider = Slider(
                      ax[-1].get_position().width, 0.03]),
     label="$\chi_{PC}$",
     valmin=-3,
-    valmax=0,
+    valmax=-2,
     valinit=0,
 )
 
@@ -62,8 +62,8 @@ d_slider = Slider(
                      ax[-1].get_position().width, 0.03]),
     label="$d$",
     valmin=1,
-    valmax=10,
-    valinit=0,
+    valmax=16,
+    valinit=8,
 )
 
 z, phi = get_phi_profile(N, sigma, chi_slider.val)
@@ -87,7 +87,7 @@ ax[0].plot([],[], color = "red", label = "mobility factor")
 phi_max = 0
 z_max = 0
 
-ax[2].set_ylim(0,2)
+ax[2].set_ylim(0,np.max(conc_profile))
 
 def update(val):
     global phi_max
@@ -126,7 +126,7 @@ def update(val):
     ax[1].set_xlim(0, z_max)
     ax[1].set_ylim(np.min([fe, fe_osm, fe_surf]), np.max([fe, fe_osm, fe_surf]))
 
-    ax[2].set_ylim(0,2)
+    ax[2].set_ylim(0,np.max(conc_profile))
 
 
     fig.canvas.draw_idle()
@@ -136,6 +136,12 @@ chi_PC_slider.on_changed(update)
 d_slider.on_changed(update)
 ax[0].set_xlabel("$z$")
 ax[0].set_ylabel(r"$\phi$")
+
+ax[1].set_xlabel("$z$")
+ax[1].set_ylabel(r"$F/k_B T$")
+
+ax[2].set_xlabel("$z$")
+ax[2].set_ylabel(r"$<c_{eq}>/c_{bulk}$")
 
 ax[0].legend(loc = "lower left")
 ax[1].legend(loc = "lower right")

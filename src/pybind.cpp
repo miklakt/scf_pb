@@ -137,7 +137,7 @@ double d_critical(const double a, const double b, const double N, const double s
         ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
         auto mobility_phi = particle_mobility::mobility_phi(particle_height, k_smooth);
         double d_eff = particle_in_brush.diffusion_coefficient(mobility_phi, a, b);
-        return std::log(d_eff)-1.0;
+        return std::log(d_eff);
     };
 
     const double maxit = 50;
@@ -152,16 +152,17 @@ double d_critical(const double a, const double b, const double N, const double s
     return r.first + (r.second - r.first)/2;
 }
 
-double chi_PC_critical(const double a, const double b, const double N, const double sigma, const double chi, const double a0, const double a1, const double d, const double k_smooth, const double min, const double max){
+double chi_PC_critical(const double a, const double b, const double N, const double sigma, const double chi, const double a0, const double a1, const double d, const double k_smooth){
     double kappa = topology::kappa(N);
     BrushProfilePlanar brush(chi, N, sigma, kappa);
+    BrushProfilePlanar brush_chi_0(0.0, N, sigma, kappa);
     particle::Sphere particle(d/2);
     auto fsolve = [=](const double chi_PC){
         auto gamma_phi = surface_interaction_coefficient::gamma_2poly_model(a0, a1, chi, chi_PC);
         ParticleBrushInteractionEnergy particle_in_brush{&particle, &brush, gamma_phi};
         auto mobility_phi = particle_mobility::mobility_phi(d, k_smooth);
         double d_eff = particle_in_brush.diffusion_coefficient(mobility_phi, a, b);
-        return std::log(d_eff)-1.0;
+        return std::log(d_eff);
     };
 
     const double maxit = 50;
@@ -171,12 +172,16 @@ double chi_PC_critical(const double a, const double b, const double N, const dou
     eps_tolerance<double> tol(get_digits);
 
     const double chi_crit = 6.0 * std::log(5.0 / 6.0);
-    const double D = brush->D();
+    const double D = brush.D();
     const double phi_av = N*sigma/D;
-    const double chi_PC_max = chi_crit+chi_PS*(1-phi_av);
+    const double phi_0 = brush.phi_z(0.0);
+    const double Pi_0_chi_0 = brush_chi_0.Pi_z(0.0);
 
+    const double chi_PC_guess = chi_crit + chi*(1-phi_av);
+    const bool rising = false;
 
-    std::pair<double, double> r = toms748_solve(fsolve, min, max, tol, it);
+    //std::pair<double, double> r = toms748_solve(fsolve, chi_PC_min, chi_PC_max, tol, it);
+    std::pair<double, double> r = bracket_and_solve_root(fsolve, chi_PC_guess, 2.0, rising, tol, it);
 
     return r.first + (r.second - r.first)/2;
 }
@@ -210,6 +215,6 @@ PYBIND11_MODULE(_scf_pb, m){
 
 
     m.def("d_critical", &d_critical, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "chi_PC"_a, "a0"_a, "a1"_a, "k_smooth"_a, "dmin"_a, "dmax"_a);
-    m.def("chi_PC_critical", &chi_PC_critical, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "a0"_a, "a1"_a, "d"_a, "k_smooth"_a, "chi_PC_min"_a, "chi_PC_max"_a);
+    m.def("chi_PC_critical", &chi_PC_critical, py::call_guard<py::gil_scoped_release>(), "Effective diffusion coefficient through polymer brush membrane (cxx)", "a"_a, "b"_a, "N"_a, "sigma"_a, "chi"_a, py::kw_only{}, "a0"_a, "a1"_a, "d"_a, "k_smooth"_a);
 
 }
